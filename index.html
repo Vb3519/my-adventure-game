@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My-adventure-game</title>    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Стартовая страница игры: -->
+    <div class="game-start-page page">
+        <h1>Greetings, wanderer!</h1>
+        <p>Create your character, set up a name for him and fight unpredictable (nope) ^_^ enemies!</p>
+
+        <div class="game-start-page__create-char create-char-container">
+            <input type="text" class="create-char-container__input input" placeholder="Your character name...">
+            <button class="create-char-container__btn char-btn">
+                Create<br> character
+            </button>
+        </div>
+
+        <!-- Изначально это поле скрыто -->
+        <div class="game-start-page__char-stats char-stats">
+            <h2 class="char-stats__charName">Your character created: Изначально скрыто</h2>
+
+            <ul class="char-stats__list stats-list">                
+                <li class="stats-list__elem charHealth">Health: </li>
+                <li class="stats-list__elem charDamage">Damage: </li>
+                <li class="stats-list__elem charLevel">Level: </li>
+                <li class="stats-list__elem charGold">Gold: </li>
+            </ul>
+        </div>
+
+        <button class="game-start-page__btn start-btn">
+            Start<br> journey
+        </button>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
