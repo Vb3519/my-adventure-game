@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My-adventure-game</title>    
+    <title>My-adventure-game</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    /> <!-- Подключение библиотеки "fontawesome" -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Стартовая страница игры: -->
     <div class="game-start-page page">
-        <h1>Greetings, wanderer!</h1>
-        <p>Create your character, set up a name for him and fight unpredictable (nope) ^_^ enemies!</p>
+        <h1>Greetings, Stranger...</h1>
+        <p>Create your character, specify his name and fight powerful enemies!</p>
 
         <div class="game-start-page__create-char create-char-container">
             <input type="text" class="create-char-container__input input" placeholder="Your character name...">
@@ -18,16 +24,16 @@
                 Create<br> character
             </button>
         </div>
-
-        <!-- Изначально это поле скрыто -->
+        
+        <!-- Поле с ником персонажа и его характеристиками (не отображается до создания персонажа) -->
         <div class="game-start-page__char-stats char-stats">
-            <h2 class="char-stats__charName">Your character created: Изначально скрыто</h2>
+            <h2 class="char-stats__char-name">Your character created: Изначально скрыто</h2>
 
             <ul class="char-stats__list stats-list">                
-                <li class="stats-list__elem charHealth">Health: </li>
-                <li class="stats-list__elem charDamage">Damage: </li>
-                <li class="stats-list__elem charLevel">Level: </li>
-                <li class="stats-list__elem charGold">Gold: </li>
+                <li class="stats-list__elem char-health">Health: </li>
+                <li class="stats-list__elem char-damage">Damage: </li>
+                <li class="stats-list__elem char-level">Level: </li>
+                <li class="stats-list__elem char-gold">Gold: </li>
             </ul>
         </div>
 
@@ -35,6 +41,67 @@
             Start<br> journey
         </button>
     </div>
+
+    <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+    <!-- Страница геймплея игры (персонаж создан, игрок выбирает куда ему направиться (город, сражения): -->
+    <div class="gameplay-page page">
+        <!-- Страница геймплея игры (ХЕАДЕР): -->
+        <div class="gameplay-page__header gameplay-header">            
+            <div class="gameplay-header__char-stats stats-container">
+                <!-- Характеристики игрока: -->
+                <div class="stats-container">
+                    <button class="stats-container__btn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <div class="stats-container__char-name">
+                        Nick-name
+                    </div>
+
+                    <ul class="stats-container__values stats-values">
+                        <li class="stats-values__elem char-health">Health: </li>
+                        <li class="stats-values__elem char-damage">Damage: </li>
+                        <li class="stats-values__elem char-level">Level: </li>
+                        <li class="stats-values__elem char-gold">Gold: </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="gameplay-header__enemy-stats enemy-stats-container">
+                <!-- Характеристики врага: -->
+                <div class="enemy-stats-container">
+
+                    <div class="enemy-stats-container__enemy-name">
+                        Enemy-name
+                    </div>
+
+                    <ul class="enemy-stats-container__values enemy-stats-values">
+                        <li class="enemy-stats-values__elem enemy-health">Health: </li>
+                        <li class="enemy-stats-values__elem enemy-damage">Damage: </li>
+                        <li class="enemy-stats-values__elem enemy-level">Level: </li>
+                    </ul>                    
+                </div>                
+            </div>
+        </div>
+
+        <!-- Страница геймплея игры (БОДИ>): -->
+        <div class="gameplay-page__body gameplay-body">
+
+            <!-- Кнопки выбора дальнейших действий персонажа: -->
+            <div class="gameplay-body__gameplay-btns gameplay-btns-container">
+                <button class="gameplay-btns-container__btn">
+                    Travel to the city
+                </button>
+
+                <button class="gameplay-btns-container__btn">
+                    Fight enemies!
+                </button>
+            </div>
+           
+            <p class="gameplay-body__descrip">In the city of Wocsom, you will have the opportunity to purchase many useful things.
+                If you have something to pay for, of course... But if you can't wait to rush into battle, then everything will be as you wish...</p>
+        </div>
+    </div>   
     <script src="script.js"></script>
 </body>
 </html>

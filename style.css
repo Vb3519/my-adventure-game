@@ -2,7 +2,21 @@ body {
     background: rgb(89, 89, 94);
 }
 
-.page {
+.page { /* Общие стили для всех страниц игры */
+    margin-top: 1rem;
+    position: relative;
+    max-width: 750px;
+    height: 400px;
+    border: 2px solid black;
+    padding: 1rem;
+    display: none; /* по умолчанию все страницы игры скрыты (кроме первой) */
+    flex-direction: column;
+    background: rgb(131, 131, 150);
+}
+
+/* Стилизация стартовой страницы: */
+.game-start-page {
+    margin-top: 1rem;
     position: relative;
     max-width: 750px;
     height: 400px;
@@ -57,4 +71,87 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+}
+
+/* Стилизация страницы геймплея: */
+/* Хеадер: */
+.gameplay-page__header {
+    position: relative;
+    display: flex;
+    /* justify-content: space-between; пытялся выровнять ".stats-container" и ".enemy-stats-container" */
+}
+
+/* Игрок: */
+.stats-container {
+    min-width: 75px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.stats-container > ul {    
+    list-style-type: none;    
+}
+
+.stats-container__values {
+    margin: 0;
+    padding-left: 0;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.stats-container__values__active {
+    display: flex;
+}
+
+
+.stats-container__char-name {
+    font-weight: bold;
+}
+
+/* Противник: */
+.enemy-stats-container {
+    margin-left: auto; /* "justify-content: space-between;" во flex-box не работает, когда один
+    из выравниваемых элементов с "position: absolute" */
+    min-width: 75px;    
+    visibility: hidden; /* "display: none" - убирает элемент из верстки (могут поспаться эл-ты) "visbility: hidden" - просто скрывает эл-т */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.enemy-stats-container > ul {    
+    list-style-type: none;    
+}
+
+.enemy-stats-container__values {
+    margin: 0;
+    padding-left: 0;
+    /* display: none; */
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+
+/* ------------------------------------------ Боди: */
+.gameplay-page__body {
+    margin-top: 7rem; /* выравнивает расположение элементов внутри родительского эл-та без указания его высоты */
+}
+
+.gameplay-body__gameplay-btns {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.gameplay-btns-container__btn {
+    height: 35px;
+}
+
+.gameplay-body__descrip {
+    text-align: center;
 }

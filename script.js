@@ -317,55 +317,31 @@ function buyWeapon() {
 
 // --------------------------------------------------------------------------------- //
 // --------------------- РАБОТА С ИНТЕРФЕЙСОМ И ОБЪЕКТАМИ ИГРЫ --------------------- //
-function createCharacter(e) {
-    let target = e.target;
 
-    if (!target.classList.contains('create-char-container__btn')) {
-        return;
-    }
-
-    let nameValue = document.querySelector('.create-char-container__input').value;
-
-    charInfo['nick_name'] = nameValue;
-
-    if (nameValue) {
-        charInfo.nickName_listed = true;
-    }
-    // return charInfo; почему тут НЕ работает "return"?
-
-    if (charInfo.nickName_listed) {
-        showCharStats();
-        addCharNameToCharStats();
-        hideCharCreationElem();
-        fillCharStatsInfoElements();
-    }
-}
-
-document.addEventListener('click', createCharacter);
-
+// ------ Стартовая страница (создание персонажа): ------ //
 // Отобразить таблицу с характеристиками созданного персонажа:
-function showCharStats() {
+function renderCreatedCharInfo() {
     let charStats = document.querySelector('.game-start-page__char-stats');
-    charStats.style.display = 'flex';    
+    charStats.style.display = 'flex';
 }
 
 // Добавить имя созданного персонажа к таблице с его характеристиками:
-function addCharNameToCharStats() {
+function addCharName() {
     let charNameValue = adventureGame[charInfoPos]['nick_name'];
-    let charNameElem = document.querySelector('.char-stats__charName');
+    let charNameElem = document.querySelector('.char-stats__char-name');
     charNameElem.innerHTML = `
         Your character created: <span>${charNameValue}</span>
     `;
 }
 
 // Скрыть поле ввода ника персонажа и кнопку создания персонажа:
-function hideCharCreationElem() {
+function hideCreateCharContainer() {
     let createCharContainer = document.querySelector('.game-start-page__create-char');
     createCharContainer.style.display = 'none';
 }
 
 // Отрисовка всех стартовых характеристик созданного персонажа: ////// --------------- надо подумать, как сделать эту функцию компактнее
-function fillCharStatsInfoElements() {
+function addNewCharStatsValues() {
     let charStatsElemList = document.querySelectorAll('.stats-list__elem');
     let arr = Array.from(charStatsElemList);
     let i = 0;
@@ -394,6 +370,116 @@ function fillCharStatsInfoElements() {
         break;
     }
 }
+
+// Общая функция (создать персонажа):
+function createNewCharacter(e) {
+    let target = e.target;
+
+    if (!target.classList.contains('create-char-container__btn')) {
+        return;
+    }
+
+    let nameValue = document.querySelector('.create-char-container__input').value;
+
+    charInfo['nick_name'] = nameValue;
+
+    if (nameValue) {
+        charInfo.nickName_listed = true;
+    }
+    // return charInfo; почему тут НЕ работает "return"?
+
+    if (charInfo.nickName_listed) {
+        renderCreatedCharInfo(); // отображение стартовых характеристик созданного персонажа
+        addCharName(); // добавление имени персонажа
+        hideCreateCharContainer(); // скрыть поле ввода имени и кнопку создания персонажа
+        addNewCharStatsValues(); // заполнить информацию по характеристикам созданного персонажа
+    }
+}
+document.addEventListener('click', createNewCharacter);
+
+
+// ------ Отображение первой игровой страницы (начало игры): ------ //
+// Начать игру (начать игру можно только, когда создан персонаж):
+function startGame(e) {
+    let target = e.target;
+    if (!target.classList.contains('game-start-page__btn')) {
+        return;
+    }
+
+    if (!charInfo.nickName_listed) {
+        return;
+    }
+
+    let startPage = document.querySelector('.game-start-page');
+    startPage.style.display = 'none';
+
+    let gameplayPage = document.querySelector('.gameplay-page');
+    gameplayPage.style.display = 'flex';
+    addCharNameToCharStats(); // отображение имени персонажа
+}
+document.addEventListener('click', startGame);
+
+
+// Функции для страницы геймплея:
+const showCharStatValuesBtn = document.querySelector('.stats-container__btn');
+
+// Заполнение данных по характеристикам персонажа:
+function fillCharStatsValues() {
+    let charStatsNodeList = document.querySelectorAll('.stats-values__elem');
+    let charStatsElemArr = Array.from(charStatsNodeList);
+
+    let i = 0;
+
+    for (; i < charStatsElemArr.length;) {        
+        charStatsElemArr[i].innerText = `Health: ${charInfo['health']}`;
+        i++;
+        break;
+    }
+
+    for (; i < charStatsElemArr.length;) {        
+        charStatsElemArr[i].innerText = `Damage: ${charInfo['damage']}`;
+        i++;
+        break;
+    }
+
+    for (; i < charStatsElemArr.length;) {        
+        charStatsElemArr[i].innerText = `Level: ${charInfo['level']}`;
+        i++;
+        break;
+    }
+
+    for (; i < charStatsElemArr.length;) {        
+        charStatsElemArr[i].innerText = `Gold: ${charInfo['gold']}`;
+        i++;
+        break;
+    }
+
+}
+
+function addCharNameToCharStats() {
+    let charNameValue = adventureGame[charInfoPos]['nick_name'];
+    let charNameElem = document.querySelector('.stats-container__char-name');
+    charNameElem.innerHTML = `
+        <span>${charNameValue}</span>
+    `;
+}
+
+// Отображение характеристик персонажа при клике на кнопку: ////// --------------- надо подумать, как сделать эту функцию компактнее
+function showCharStatsValues() {    
+    let charStatsValues = document.querySelector('.stats-container__values');
+    charStatsValues.classList.toggle('stats-container__values__active');
+    fillCharStatsValues();    
+}
+showCharStatValuesBtn.addEventListener('click', showCharStatsValues);
+
+
+
+
+
+
+
+
+
 
 
 
