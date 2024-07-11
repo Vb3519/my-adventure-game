@@ -83,7 +83,7 @@ body {
 
 /* Игрок: */
 .stats-container {
-    min-width: 75px;
+    min-width: 125px;
     position: absolute;
     display: flex;
     flex-direction: column;
@@ -112,12 +112,21 @@ body {
     font-weight: bold;
 }
 
+
 /* Противник: */
+.gameplay-header__enemy-stats {
+    visibility: hidden; /* "display: none" - убирает элемент из верстки (могут поспаться эл-ты) "visbility: hidden" - просто скрывает эл-т */
+}
+
+.enemy-stats-container__enemy-name {
+    font-weight: bold;
+}
+
 .enemy-stats-container {
     margin-left: auto; /* "justify-content: space-between;" во flex-box не работает, когда один
     из выравниваемых элементов с "position: absolute" */
-    min-width: 75px;    
-    visibility: hidden; /* "display: none" - убирает элемент из верстки (могут поспаться эл-ты) "visbility: hidden" - просто скрывает эл-т */
+    min-width: 75px;
+    display: flex;       
     flex-direction: column;
     align-items: flex-start;
     gap: 1rem;
@@ -131,6 +140,7 @@ body {
     margin: 0;
     padding-left: 0;
     /* display: none; */
+    display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
@@ -154,4 +164,16 @@ body {
 
 .gameplay-body__descrip {
     text-align: center;
+}
+
+.optional-btn {
+    display: none;
+}
+
+.enemy-type {
+    display: none;
+}
+
+.combat-options {
+    display: none;
 }

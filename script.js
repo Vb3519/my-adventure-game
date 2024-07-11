@@ -16,16 +16,19 @@ let adventureGame = [
         'wild_boar': {
             health: 30,
             damage: 10, /* укажи урон в переменной */
+            name: 'Wild Boar',
         },
 
         blackBrowedBear: {
             health: 100,
             damage: 50, /* укажи урон в переменной */
+            name: 'Felwood Giant Bear',
         },
 
         'dragon_steelwing': {
             health: 250,
             damage: 100, /* укажи урон в переменной */
+            name: 'Dragon Steelwing',
         }
     },
 
@@ -453,7 +456,6 @@ function fillCharStatsValues() {
         i++;
         break;
     }
-
 }
 
 function addCharNameToCharStats() {
@@ -473,14 +475,138 @@ function showCharStatsValues() {
 showCharStatValuesBtn.addEventListener('click', showCharStatsValues);
 
 
+// ------ Отображение игровой страницы (fight enemies!): ------ //
+
+function showEnemiesMenu() {
+    let enemiesListBtns = document.querySelectorAll('.enemy-type');
+
+    Array.from(enemiesListBtns).forEach( elem => {
+        elem.style.display = 'block';
+    });
+
+    let playerTravelOptionBtns = document.querySelectorAll('.travel-option');
+    Array.from(playerTravelOptionBtns).forEach( elem => {
+        elem.style.display = 'none';
+    });
+
+    // рандомная подсказка из массива подсказок, на каждом меню?
+    let pageTooltip = document.querySelector('.gameplay-body__descrip');
+    pageTooltip.innerHTML = 'Choose your enemy wisely...';
+}
+const enemiesMenuBtn = document.querySelector('#enemies-menu');
+enemiesMenuBtn.addEventListener('click', showEnemiesMenu);
 
 
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
+// добавление объекту персонажа метода убавления хп в бою в соответствии с уровнем атаки выбранного врага:
+function addHealthLossForPlayer(inputPlayerEnemy) {
+    let charInfoObj = adventureGame[charInfoPos];
+            
+    charInfoObj.player_fight_health_decrease = function() {
+        if (charInfoObj.health <= 0) {
+            return `YOU DIED!`;
+        }
+        
+        if (charInfoObj.health > 0) {
+            charInfoObj.health -= inputPlayerEnemy['damage'];        
+            return charInfoObj;
+        }
+    }
+}
+   
+// заполнение значений характеристик врага:
+function fillEnemyStatsValues(inputPlayerEnemy) {
+    let enemyStatsNodeList = document.querySelectorAll('.enemy-stats-values__elem');
+    let enemyStatsElemArr = Array.from(enemyStatsNodeList);
 
+    // отображение характеристик врага (с уже заполненными значениями):
+    let enemyStatsElem = document.querySelector('.gameplay-header__enemy-stats');
+    enemyStatsElem.style.visibility = 'visible';
+    
+    let i = 0;
+    
+    for (; i < enemyStatsElemArr.length;) {        
+        enemyStatsElemArr[i].innerText = `Health: ${inputPlayerEnemy['health']}`;
+        i++;
+        break;
+    }
+    
+    for (; i < enemyStatsElemArr.length;) {        
+        enemyStatsElemArr[i].innerText = `Damage: ${inputPlayerEnemy['damage']}`;
+        i++;
+        break;
+    }
+}
+    
+// Отображение имени выбранного врага:
+function showEnemyName(inputPlayerEnemy) {
+    let enemyNameElem = document.querySelector('.enemy-stats-container__enemy-name');
+    enemyNameElem.innerHTML = inputPlayerEnemy['name'];
+}
 
+// скрывает кнопки отображения выбора варианта врага:
+function hideEnemySelectionList() {
+    let enemiesListBtns = document.querySelectorAll('.enemy-type');
+    Array.from(enemiesListBtns).forEach( elem => {
+        elem.style.display = 'none';
+    });
+}
 
+// Подготовка к бою (отрисовка новых кнопок: "атака" / "бегство"; открытие списка характеристик персонажа; отображение новой подсказки)
+function playerPrepForBattle() {
+    function showCharStatsValues() {    
+        let charStatsValues = document.querySelector('.stats-container__values');
+        charStatsValues.classList.toggle('stats-container__values__active');
+        fillCharStatsValues();
+    }
+    showCharStatsValues();
+        
+    // Отрисовка кнопок боя (бегство, атаковать)
+    let combatOptionsBtns = document.querySelectorAll('.combat-options');
+    Array.from(combatOptionsBtns).forEach( btn => {
+        btn.style.display = 'block';
+    })
+        
+    // Смена подсказки:
+    let pageTooltip = document.querySelector('.gameplay-body__descrip');
+    pageTooltip.innerHTML = 'You always have the opportunity to escape before the battle begins, but what about your warrior pride?';
+}
 
-
+function choosePlayerEnemyAndStartFight(e) {
+    let target = e.target;
+    
+    // if (! (target.className.contains('enemy-type')) ) {
+    //     return;
+    // }
+    
+    if (target.id === 'boar_enemy') {
+        addHealthLossForPlayer(wild_boar);
+        fillEnemyStatsValues(wild_boar);
+        showEnemyName(wild_boar);
+        hideEnemySelectionList();
+        playerPrepForBattle();
+    }
+    
+    if (target.id === 'bear_enemy') {
+        addHealthLossForPlayer(blackBrowedBear);
+        fillEnemyStatsValues(blackBrowedBear);
+        showEnemyName(blackBrowedBear);
+        hideEnemySelectionList();
+        playerPrepForBattle();
+    }
+    
+    if (target.id === 'dragon_enemy') {
+        addHealthLossForPlayer(dragon_steelwing);
+        fillEnemyStatsValues(dragon_steelwing);
+        showEnemyName(dragon_steelwing);
+        hideEnemySelectionList();
+        playerPrepForBattle();
+    }
+}
+document.addEventListener('click', choosePlayerEnemyAndStartFight);
 
 
 

@@ -89,19 +89,47 @@
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
             <div class="gameplay-body__gameplay-btns gameplay-btns-container">
-                <button class="gameplay-btns-container__btn">
+                <button class="gameplay-btns-container__btn optional-btn">
+                    Restart game
+                </button>
+                
+                <button class="gameplay-btns-container__btn travel-option">
                     Travel to the city
                 </button>
 
-                <button class="gameplay-btns-container__btn">
+                <button id='enemies-menu' class="gameplay-btns-container__btn travel-option">
                     Fight enemies!
+                </button>
+
+                <!-- Кнопки с вариантом выбора врага -->
+                <button id='boar_enemy' class="gameplay-btns-container__btn enemy-type">
+                    Wild Boar
+                </button>
+
+                <button id='bear_enemy' class="gameplay-btns-container__btn enemy-type">
+                    Felwood Giant Bear
+                </button>
+
+                <button id='dragon_enemy' class="gameplay-btns-container__btn enemy-type">
+                    Dragon SteelWing
+                </button>
+
+                <!-- Кнопки для сражения с врагом -->
+                <button id='flee-from-enemy' class="gameplay-btns-container__btn combat-options">
+                    Flee
+                </button>
+
+                <button id='attack-enemy' class="gameplay-btns-container__btn combat-options">
+                    Attack!
                 </button>
             </div>
            
             <p class="gameplay-body__descrip">In the city of Wocsom, you will have the opportunity to purchase many useful things.
                 If you have something to pay for, of course... But if you can't wait to rush into battle, then everything will be as you wish...</p>
         </div>
-    </div>   
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
+
+<!-- 'You always have the opportunity to escape before the battle begins, but what about your warrior pride?'; -->
