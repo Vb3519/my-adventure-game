@@ -86,6 +86,15 @@
 
         <!-- Страница геймплея игры (БОДИ>): -->
         <div class="gameplay-page__body gameplay-body">
+            <div class="gameplay-body__alert alert-container">
+                <div class="alert-container__player-win">
+                    YOU WIN!
+                </div>
+
+                <div class="alert-container__player-lose">
+                    YOU DIED!
+                </div>
+            </div>
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
             <div class="gameplay-body__gameplay-btns gameplay-btns-container">
@@ -93,6 +102,7 @@
                     Restart game
                 </button>
                 
+                <!-- Кнопки с вариантом выбора пути (на старте): "в город", "сражаться с врагами" -->
                 <button class="gameplay-btns-container__btn travel-option">
                     Travel to the city
                 </button>
@@ -121,6 +131,15 @@
 
                 <button id='attack-enemy' class="gameplay-btns-container__btn combat-options">
                     Attack!
+                </button>
+
+                <!-- Кнопки после сражения с врагом (игрок победил) -->
+                <button id='return-to-the-city' class="gameplay-btns-container__btn player-win-fight-options">
+                    Return to the city
+                </button>
+
+                <button id='fight-again' class="gameplay-btns-container__btn player-win-fight-options">
+                    Fight again!
                 </button>
             </div>
            

@@ -234,7 +234,7 @@ function addHealthLossForEnemyBoar() {
 
 // --------------------- ЛОГИКА ПРОЦЕССА БОЯ ИГРОКА С ПРОТИВНИКОМ: --------------------- //
 let playerEnemiesList = [wild_boar, blackBrowedBear, dragon_steelwing] // ч/з "indexOf()" найти позицию каждого объекта в "enemyInfo", далее перебрать сами объекты по номеру индекса;
-function addHealthLossForEnemy(inputEnemyList) { // сюда передать, как аргумент, массив объектов из объекта "enemyInfo"
+function addGeneralHealthLossForEnemy(inputEnemyList) { // сюда передать, как аргумент, массив объектов из объекта "enemyInfo"
     let playerDamageValue = adventureGame[charInfoPos].damage;
 
     inputEnemyList.forEach( enemyName => {
@@ -263,49 +263,6 @@ function addHealthLossForPlayer(inputPlayerEnemy) {
             return charInfoObj;
         }
     }
-}
-
-// Общая функция логики боя (как разбить ее на много маленьких?):
-let attacksCounter = 0;
-function playerFightWithEnemyMainFunc(enemy) {
-    // Проверка на наличие врага:
-    if (enemy == undefined || enemy == null) {
-        return `No enemies were found nearby`;
-    };
-
-    // Функция боя игрока и противника:
-    function playerAndEnemyFight() {
-        let playerHP = adventureGame[1]['health'];
-        let enemyHP = enemy.health;
-        
-        let charInfoObj = adventureGame[charInfoPos];
-        
-        for (; attacksCounter < 500;) {
-            if (playerHP > 0 && enemyHP <= 0) {
-                return `Your hero ${charInfo['nick_name']} won in this battle!`;
-            }
-    
-            if (playerHP <= 0 && enemyHP > 0) {
-                return `YOU DIED!`;
-            }
-    
-            // Атака игрока (четные числа):
-            if (attacksCounter % 2 === 0) {
-                enemy['fight_health_decrease']();
-                attacksCounter++;
-                return enemy;
-                }
-    
-            // Атака противника (нечетные числа):
-            if (attacksCounter % 2 !== 0) {
-                charInfoObj.player_fight_health_decrease();
-                attacksCounter++;
-                return charInfoObj;
-            }
-        }
-    }
-    
-    return playerAndEnemyFight();
 }
 
 // Добавить шанс промаха в логику боя???
@@ -498,26 +455,13 @@ enemiesMenuBtn.addEventListener('click', showEnemiesMenu);
 
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
-// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------- ПОДГОТОВКА К БОЮ ------------------------------------------------------------------------- //
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
-// добавление объекту персонажа метода убавления хп в бою в соответствии с уровнем атаки выбранного врага:
-function addHealthLossForPlayer(inputPlayerEnemy) {
-    let charInfoObj = adventureGame[charInfoPos];
-            
-    charInfoObj.player_fight_health_decrease = function() {
-        if (charInfoObj.health <= 0) {
-            return `YOU DIED!`;
-        }
-        
-        if (charInfoObj.health > 0) {
-            charInfoObj.health -= inputPlayerEnemy['damage'];        
-            return charInfoObj;
-        }
-    }
-}
-   
-// заполнение значений характеристик врага:
+// --------------------------------------------------------------- //
+// ------------- РАБОТА С ИНТЕРФЕЙСОМ ПОДГОТОВКИ БОЯ ------------- //
+
+// Заполнение значений характеристик врага:
 function fillEnemyStatsValues(inputPlayerEnemy) {
     let enemyStatsNodeList = document.querySelectorAll('.enemy-stats-values__elem');
     let enemyStatsElemArr = Array.from(enemyStatsNodeList);
@@ -540,14 +484,14 @@ function fillEnemyStatsValues(inputPlayerEnemy) {
         break;
     }
 }
-    
+
 // Отображение имени выбранного врага:
 function showEnemyName(inputPlayerEnemy) {
     let enemyNameElem = document.querySelector('.enemy-stats-container__enemy-name');
     enemyNameElem.innerHTML = inputPlayerEnemy['name'];
 }
 
-// скрывает кнопки отображения выбора варианта врага:
+// Скрываем кнопки отображения выбора варианта врага:
 function hideEnemySelectionList() {
     let enemiesListBtns = document.querySelectorAll('.enemy-type');
     Array.from(enemiesListBtns).forEach( elem => {
@@ -555,7 +499,15 @@ function hideEnemySelectionList() {
     });
 }
 
-// Подготовка к бою (отрисовка новых кнопок: "атака" / "бегство"; открытие списка характеристик персонажа; отображение новой подсказки)
+// Отрисовка кнопок начала процесса боя ("атака" / "бегство"):
+function showCombatBtns() {
+    let combatOptionsBtns = document.querySelectorAll('.combat-options');
+    Array.from(combatOptionsBtns).forEach( btn => {
+        btn.style.display = 'block';
+    })
+}
+
+// Подготовка к бою (открытие списка характеристик персонажа; отрисовка новых кнопок: "атака" / "бегство"; отображение новой подсказки)
 function playerPrepForBattle() {
     function showCharStatsValues() {    
         let charStatsValues = document.querySelector('.stats-container__values');
@@ -564,50 +516,281 @@ function playerPrepForBattle() {
     }
     showCharStatsValues();
         
-    // Отрисовка кнопок боя (бегство, атаковать)
-    let combatOptionsBtns = document.querySelectorAll('.combat-options');
-    Array.from(combatOptionsBtns).forEach( btn => {
-        btn.style.display = 'block';
-    })
+    // Отрисовка кнопок боя (бегство, атаковать):    
+    showCombatBtns();
         
     // Смена подсказки:
     let pageTooltip = document.querySelector('.gameplay-body__descrip');
     pageTooltip.innerHTML = 'You always have the opportunity to escape before the battle begins, but what about your warrior pride?';
 }
 
+
+// ----------------------------------------------------------------------------------- //
+// ------------- РАБОТА С ОБЪЕКТАМИ ИГРОКА И ПРОТИВНИКА (ПОДГОТОВКА БОЯ) ------------- //
+
+// добавление объекту ПЕРСОНАЖА метода убавления хп в бою в соответствии с уровнем атаки выбранного врага:
+function addHealthLossForPlayer(inputPlayerEnemy) {
+    let charInfoObj = adventureGame[charInfoPos];
+            
+    charInfoObj.player_fight_health_decrease = function() {
+        if (charInfoObj.health <= 0) {
+            return `YOU DIED!`;
+        }
+        
+        if (charInfoObj.health > 0) {
+            charInfoObj.health -= inputPlayerEnemy['damage'];        
+            return charInfoObj;
+        }
+    }
+}
+
+// добавление объекту ПЕРСОНАЖА метода накопления золота (при победе над врагом):
+function addGainGold() {
+    let charInfoObj = adventureGame[charInfoPos];
+
+    charInfoObj['gold_increase'] = function() {
+        charInfoObj['gold'] += 10;
+        return charInfoObj;
+    }
+}
+
+// добавление объекту ПРОТИВНИКА метода убавления хп в бою в соответствии с уровнем атаки персонажа:
+function addHealthLossForEnemy(inputPlayerEnemy) {
+    let playerDamageValue = adventureGame[charInfoPos].damage;
+
+    inputPlayerEnemy['fight_health_decrease'] = function() {
+        if (inputPlayerEnemy.health <= 0) {
+            return;
+        }
+        
+        inputPlayerEnemy.health -= playerDamageValue;
+        return inputPlayerEnemy;
+    }
+}
+   
+// Возврат объекта выбранного игроком врага:
+let selectedPlayerEnemy; // ------------------------------- эта переменная передается в некоторые функции при вызове, как аргумент
+function returnSelectedEnemyObj(inputPlayerEnemy) {
+    selectedPlayerEnemy = inputPlayerEnemy;
+    return selectedPlayerEnemy;
+}
+
+/* ОБЩАЯ ФУНКЦИЯ И ВСПОМОГАТЕЛЬНАЯ ФУКНЦИИ перед началом процесса боя): */
+
+// ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ (вызывается в общей):
+/* выбор игроком противника, подготовка к бою (отрисовка интерфейса, добавление методов к объектам и т.д.) */
+function setupAllOptionsBeforeBattle(battleOptionsAndEnemyType) {
+    returnSelectedEnemyObj(battleOptionsAndEnemyType); // возврат объекта выбранного противника (переменная "selectedPlayerEnemy"), используется в др. функциях
+    addHealthLossForPlayer(battleOptionsAndEnemyType); // добавление метода потери хп к объекту игрока
+    addGainGold(); // добавление метода накопления золота к объекту игрока (при победе игрока в бою);
+    addHealthLossForEnemy(battleOptionsAndEnemyType) // добавление метода потери хп к объекту врага
+    fillEnemyStatsValues(battleOptionsAndEnemyType); // отрисовка характеристик врага
+    showEnemyName(battleOptionsAndEnemyType); // отрисовка имени врага
+    hideEnemySelectionList(); // скрываем кнопки выбора противника "boar", "bear", "dragon"
+    playerPrepForBattle(); // раскрытие характеристик игрока, отрисовка кнопок "Flee" и "Attack!", смена подсказки
+}
+
+// ОБЩАЯ ФУНКЦИЯ: по клику на кнопку "enemy-type" ("boar", "bear", "dragon"), игрок выбирает противника (выполняются все функции, указанные во вспомогательной):
 function choosePlayerEnemyAndStartFight(e) {
     let target = e.target;
     
-    // if (! (target.className.contains('enemy-type')) ) {
-    //     return;
-    // }
+    if (! (target.classList.contains('enemy-type')) ) {
+        return;
+    }
     
     if (target.id === 'boar_enemy') {
-        addHealthLossForPlayer(wild_boar);
-        fillEnemyStatsValues(wild_boar);
-        showEnemyName(wild_boar);
-        hideEnemySelectionList();
-        playerPrepForBattle();
+        setupAllOptionsBeforeBattle(wild_boar);        
     }
     
     if (target.id === 'bear_enemy') {
-        addHealthLossForPlayer(blackBrowedBear);
-        fillEnemyStatsValues(blackBrowedBear);
-        showEnemyName(blackBrowedBear);
-        hideEnemySelectionList();
-        playerPrepForBattle();
+        setupAllOptionsBeforeBattle(blackBrowedBear);
     }
     
     if (target.id === 'dragon_enemy') {
-        addHealthLossForPlayer(dragon_steelwing);
-        fillEnemyStatsValues(dragon_steelwing);
-        showEnemyName(dragon_steelwing);
-        hideEnemySelectionList();
-        playerPrepForBattle();
+        setupAllOptionsBeforeBattle(dragon_steelwing);
     }
 }
 document.addEventListener('click', choosePlayerEnemyAndStartFight);
 
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------- ПРОЦЕСС БОЯ ------------------------------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+// ------------- НАЧАЛО БОЯ ------------- //
+
+// Процесс боя между игроком и выбранным противником:
+let attacksCounter = 0;
+function playerAndEnemyFightProcess(e) {
+    let target = e.target;
+
+    if (target.id !== 'attack-enemy') {
+        return;
+    }
+
+    let fleeBtn = document.querySelector('#flee-from-enemy'); // после старта боя кнопка возможности побега - дизейблится
+    fleeBtn.disabled = true;        
+    
+    playerAttack(selectedPlayerEnemy);
+
+    let attackBtn = document.querySelector('#attack-enemy');
+    attackBtn.disabled = true; // после атаки игроком противника, кнопка атаки дизейблится, пока противник не совершит свою атаку
+
+    setTimeout( () => { // атака противника идет ч/з две секунды после атаки игрока
+        enemyAttack();
+    }, 2000);
+}
+
+document.addEventListener('click', playerAndEnemyFightProcess);
+
+// атака игрока:
+function playerAttack(inputPlayerEnemy) { // работает по клику все ок
+    let enemyHealthElem = document.querySelector('.enemy-health');
+
+    if (attacksCounter % 2 === 0) {
+        inputPlayerEnemy['fight_health_decrease']();
+        battleHealthDecreaseAnimation(enemyHealthElem);
+        fillEnemyStatsValues(inputPlayerEnemy);       
+
+        attacksCounter++;
+        return inputPlayerEnemy;
+    }    
+}
+
+// атака противника:
+function enemyAttack() { // все работает, но эта функция не должна вызываться, когда ХП противника меньше 0
+    
+    let attackBtn = document.querySelector('#attack-enemy');
+    attackBtn.disabled = false; // как проходит атака противника, кнопка атаки для игрока становится доступна
+
+    let playerHealthElem = document.querySelector('.stats-values__elem.char-health'); // передается как аргумент в вызов функции анимации уменьшения хп
+    
+    let charInfoObj = adventureGame[charInfoPos];
+
+    if (attacksCounter % 2 !== 0) {
+        // Проверка хп врага: если у противника нет хп, он не атакует игрока в ответ (даже если идет ход противника)
+        if ( isEnemyDead(selectedPlayerEnemy) ) {            
+            return;
+        }
+
+        charInfoObj.player_fight_health_decrease();
+        battleHealthDecreaseAnimation(playerHealthElem);
+        fillCharStatsValues();        
+        
+        attacksCounter++;
+        return charInfoObj;
+    }
+}
+
+// Проверка убит ли противник игрока:
+function isEnemyDead(inputPlayerEnemy) {
+    if (inputPlayerEnemy.health <= 0) {
+        return true;
+    }
+}
+
+// При уменьшении количества хп игрока или противника, значение хп подсвечивается (анимация):
+function battleHealthDecreaseAnimation(inputPlayerOrEnemy) {    
+    inputPlayerOrEnemy.style.color = 'rgb(120 7 7)';
+    inputPlayerOrEnemy.style.fontWeight = 'bold';
+
+    setTimeout( () => {
+        inputPlayerOrEnemy.style.color = 'black';
+        inputPlayerOrEnemy.style.fontWeight = 'normal';
+    }, 1000)
+}
+
+
+
+// Файт закончился победой игрока:
+// Скрыть кнопки flee и attack,
+// Скрыть характеристики и имя врага
+// насыпать 10 голды игроку
+// Отрисовка сообщения - победа игрока (на 2 секунды)
+// Далее отрисовка кнопок "back to the city" и "start again" (хп игрока при повторном сражении не восстанавливаются - только при посещении города)
+
+
+// сообщение о победе игрока (на 2 секунды):
+function alertAfterBattlePlayerWins() {
+    let plaerWinAlertElem = document.querySelector('.alert-container__player-win');    
+    
+    if ( isEnemyDead(selectedPlayerEnemy) ) {
+        plaerWinAlertElem.style.visibility = 'visible';
+
+        setTimeout( () => {
+            plaerWinAlertElem.style.visibility = 'hidden';
+        }, 2000)
+    }
+}
+
+// скрытие кнопок комбата:
+function hideCombatBtns() {
+    let combatOptionsBtns = document.querySelectorAll('.combat-options');
+    Array.from(combatOptionsBtns).forEach( btn => {
+        btn.style.display = 'none';
+    })
+}
+
+// отображение кнопок повтора боя и возвращения в город:
+function showPlayerWinFightBtns() {
+    let playerWinFightBtns = document.querySelectorAll('.player-win-fight-options');
+    Array.from(playerWinFightBtns).forEach( btn => {
+        btn.style.display = 'block';
+    })
+}
+
+// скрыть элемент с информацией об имени и характеристиках противника:
+function hideEnemyNameAndStats() {
+    let enemyNameAndStatsElem = document.querySelector('.enemy-stats-container');
+    enemyNameAndStatsElem.style.visibility = 'hidden';
+}
+
+// Показать новую подсказку:
+function showNewTooltip() {
+    let pageToolTip = document.querySelector('.gameplay-body__descrip');
+    pageToolTip.innerHTML = 'In battles with opponents, you have a chance to get gold and experience';
+}
+
+// Насыпать объекту игрока 10 голды:
+function addGoldtoPlayerIfWinFight() {
+    let charInfoObj = adventureGame[charInfoPos];
+    charInfoObj['gold_increase']();
+}
+
+// Обновить все характеристики персонажа:
+function refillCharStatsValues() {
+    fillCharStatsValues();
+}
+
+
+function setupAllOptionsAfterBattle() {
+    if ( isEnemyDead(selectedPlayerEnemy) ) {
+        hideCombatBtns();
+        showPlayerWinFightBtns();
+        alertAfterBattlePlayerWins();
+        hideEnemyNameAndStats();
+        showNewTooltip();
+        addGoldtoPlayerIfWinFight();
+        refillCharStatsValues();
+    }    
+}
+
+// Если игрок клацает fight-again:
+// Обновить все характеристики врага (сделать полными снова):
+// После боя объект поверженного врага пустой, нужно обновить его начальные характеристики и снова их отрисовать (а для игрока хп не обновлять)
+// Обновлять attacksCounter = 0; (перед каждым боем)
+// selectedPlayerEnemy обновится автоматически с обновленим хп объекта; задай "defaultHealthValue" такое же как хп и бери значение из него;
+
+
+// Напиши функцию отображения рандомной подсказки из двух массивов (мирные подсказки и подсказки во время боя);
+
+// Если игрок проиграл:
+// Кнопка начать заново -> стартовое меню и создание нового персонажа
+
+// Если игрок решил отправиться в город:
+// ХП игрока восстанавливается
+// Меню магазина (два типа оружия на выбор и увеличение ХП)
 
 
 

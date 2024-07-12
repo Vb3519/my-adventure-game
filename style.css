@@ -148,7 +148,7 @@ body {
 
 /* ------------------------------------------ Боди: */
 .gameplay-page__body {
-    margin-top: 7rem; /* выравнивает расположение элементов внутри родительского эл-та без указания его высоты */
+    margin-top: 6rem; /* выравнивает расположение элементов внутри родительского эл-та без указания его высоты */
 }
 
 .gameplay-body__gameplay-btns {
@@ -166,6 +166,7 @@ body {
     text-align: center;
 }
 
+/* Кнопки: */
 .optional-btn {
     display: none;
 }
@@ -176,4 +177,22 @@ body {
 
 .combat-options {
     display: none;
+}
+
+.player-win-fight-options {
+    display: none;
+}
+
+/* Объявления: */
+.alert-container {
+    display: flex;
+    margin-bottom: 1rem;    
+}
+
+.alert-container__player-win {
+    visibility: hidden;
+}
+
+.alert-container__player-lose {
+    visibility: hidden;
 }
