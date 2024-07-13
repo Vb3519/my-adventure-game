@@ -755,7 +755,21 @@ function battleHealthDecreaseAnimation(inputPlayerOrEnemy) {
 
 // Сообщение о победе игрока (отображается 2 секунды):
 function alertAfterBattlePlayerWins() {
-    let playerWinAlertElem = document.querySelector('.alert-container__player-win');    
+    let charNameValue = adventureGame[charInfoPos]['nick_name'];
+
+    // let playerWinAlertElem = document.querySelector('.alert-container__player-in-the-city');
+    // playerWinAlertElem.innerHTML = `${charNameValue}: Okay, it was easy...`;
+
+    // if ( isEnemyDead(selectedPlayerEnemy) ) {
+    //         playerWinAlertElem.style.visibility = 'visible';
+    
+    //         setTimeout( () => { // после победы игрока показать сообщение о победе на 3 секунды
+    //             playerWinAlertElem.style.visibility = 'hidden';
+    //         }, 2000)
+    //     }
+
+    let playerWinAlertElem = document.querySelector('.alert-container__player-alert');
+    playerWinAlertElem.innerHTML = `${charNameValue}: Okay, it was easy...`;
     
     if ( isEnemyDead(selectedPlayerEnemy) ) {
         playerWinAlertElem.style.visibility = 'visible';
@@ -881,7 +895,8 @@ function isPlayerCharacterDead() {
 
 // Показывается сообщение о проигрыше игрока (на 2 секунды):
 function alertAfterBattlePlayerLose() {
-    let playerLoseAlertElem = document.querySelector('.alert-container__player-lose');    
+    let playerLoseAlertElem = document.querySelector('.alert-container__player-alert');
+    playerLoseAlertElem.innerHTML = `YOU DIED!`;
     
     if ( isPlayerCharacterDead() ) {
         playerLoseAlertElem.style.visibility = 'visible';
@@ -1121,6 +1136,28 @@ function showCityBtns() {
     });
 }
 
+function showCityVisitAlert() {
+    let charNameValue = adventureGame[charInfoPos]['nick_name'];
+
+    let cityAlert = document.querySelector('.alert-container__player-alert');
+    cityAlert.innerHTML = `
+        ${charNameValue}: The first thing i need to do is visit the tavern...
+    `;
+
+    setTimeout( () => {
+        cityAlert.style.visibility = 'visible';
+    }, 2000)
+
+    setTimeout( () => {
+        hideCityVisitAlert();
+    }, 4000)
+}
+
+function hideCityVisitAlert() {
+    let cityAlert = document.querySelector('.alert-container__player-alert');
+    cityAlert.style.visibility = 'hidden';
+}
+
 // Посещение города:
 function travelToTheCity(e) {
     let target = e.target;
@@ -1128,9 +1165,17 @@ function travelToTheCity(e) {
     if (target.id !== 'travel-to-the-city') {
         return;
     }
+
+    let leaveTheCityBtn = document.querySelector('#leave-city');
+    leaveTheCityBtn.disabled = true;
+    
+    setTimeout( () => {
+        leaveTheCityBtn.disabled = false;
+    }, 2000) // антиспам для кнопки (переключение между посетить город / покинуть город игроком)
     
     hideTravelBtns();
     showCityBtns();
+    showCityVisitAlert();
     // функция отображения подсказки
 }
 document.addEventListener('click', travelToTheCity);
@@ -1146,26 +1191,69 @@ function leaveTheCity(e) {
 
     showTravelBtns();
     hideCityBtns();
+    hideCityVisitAlert();
     // функция отображения подсказки
 }
 document.addEventListener('click', leaveTheCity);
 
+/////////////////// ДОБАВЬ ПРИ ПОСЕЩЕНИИ ГОРОДА ВОССТАНОВЛЕНИЕ ХП ИГРОКА
+
+
 //////
 // Посещение городского магазина:
-function visitMagicStore() {
+function visitMagicStore(e) {
+    let target = e.target;
+
+    if (target.id !== 'magic-store') {
+        return;
+    }
+
+    renderStoreWindow();
+    hideVisitStoreBtn();
+
     // отобразить кнопки покупки напротив каждого оружия (два оружия, две кнопки); секретное оружие, которое можно купить за хп (сделать тултип - "подумай дважды")
+    // покупка хп; 10хп - 10 золота
+    // секретное оружие уже нельзя купить после первого боя с врагом
     // отобразить кнопку возможности покинуть город
     // если у игрока недостаточно золота - кнопка покупки оружия будет задизейблена (всегда доступна только кнопка покупки орижя за хп);
-    // после покупки любого оружия за голд кнокпка покупки также дизейблится
-    // после покупки оружия за хп, магазин станвоится не доступен вовсе
-
+    // после покупки любого оружия за голд кнопка покупки также дизейблится
+    // после покупки оружия за хп, магазин становится не доступен вовсе
 }
 
+document.addEventListener('click', visitMagicStore);
+
+function renderStoreWindow() {    
+    let cityStoreElem = document.querySelector('.gameplay-body__city-store');
+    cityStoreElem.style.visibility = 'visible';
+}
+
+function hideStoreWindow() {
+    let cityStoreElem = document.querySelector('.gameplay-body__city-store');
+    cityStoreElem.style.visibility = 'hidden';
+}
+
+function hideVisitStoreBtn() {
+    let visitStoreBtn = document.querySelector('#magic-store');
+    visitStoreBtn.style.display = 'none';
+}
+
+// Уход из городского магазина:
+function leaveMagicStore(e) {
+    let target = e.target;
+
+    if (target.id !== 'leave-city') {
+        return;
+    }
+
+    hideStoreWindow();
+}
+
+document.addEventListener ('click', leaveMagicStore);
 
 
-
-
-
+// Функция, которая висит на кнопке "travel-to-the-city", отображает кнопки "Visit the store" и "leave the city" (дизейбли эту кнопку на секунду после отображения) - чтоб не спамили;
+// Тут функция висит на кнопке "leave-city"; и после переключения с этих двух кнопок на кнопки "Travel to the city" и "fight enemies", дизейбли на секунду первую кнопку
+// Убери при посещении магазина подсказку - освободит место
 
 
 

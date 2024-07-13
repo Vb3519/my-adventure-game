@@ -6,7 +6,8 @@ body {
     margin-top: 1rem;
     position: relative;
     max-width: 750px;
-    height: 400px;
+    min-width: 250px;
+    /* height: 400px; */
     border: 2px solid black;
     padding: 1rem;
     display: none; /* по умолчанию все страницы игры скрыты (кроме первой) */
@@ -148,11 +149,12 @@ body {
 
 /* ------------------------------------------ Боди: */
 .gameplay-page__body {
-    margin-top: 6rem; /* выравнивает расположение элементов внутри родительского эл-та без указания его высоты */
+    margin-top: 4rem; /* выравнивает расположение элементов внутри родительского эл-та без указания его высоты */
 }
 
 .gameplay-body__gameplay-btns {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: center;
     gap: 2rem;
@@ -192,15 +194,38 @@ body {
 }
 
 /* Объявления: */
-.alert-container {
+.alert-container {    
     display: flex;
-    margin-bottom: 1rem;    
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    justify-content: center;
 }
 
-.alert-container__player-win {
+.alert-container__player-alert {
     visibility: hidden;
+    text-align: center;
 }
 
-.alert-container__player-lose {
+/* Городской магазин */
+.gameplay-body__city-store {
     visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.city-store-container__item {
+    display: flex;
+    gap: 1rem;
+}
+
+.sword-container__price {
+    margin-left: 2.6rem;
+}
+
+.secret-container__price {
+    margin-left: 2.6rem;    
 }

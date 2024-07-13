@@ -86,14 +86,60 @@
 
         <!-- Страница геймплея игры (БОДИ>): -->
         <div class="gameplay-page__body gameplay-body">
-            <div class="gameplay-body__alert alert-container">
-                <div class="alert-container__player-win">
-                    YOU WIN!
+            <div class="gameplay-body__alert alert-container">               
+
+                <div class="alert-container__player-alert">
+                    The first thing i need to do is visit the tavern...
+                </div>
+            </div>
+
+            <!-- Городской магазин: -->
+            <div class="gameplay-body__city-store city-store-container">
+                <!-- Кинжал (название и цена) -->
+                <div class="city-store-container__item dagger-container">
+                    <div class="dagger-container__name">
+                        The dagger of the unlucky thief
+                    </div>
+
+                    <div class="dagger-container__price">
+                        50 gold
+                    </div>
+
+                    <button class="dagger-container__buy">
+                        Buy
+                    </button>
+                </div>
+               
+                <!-- Кинжал (название и цена) -->
+                <div class="city-store-container__item sword-container">
+                    <div class="sword-container__name">
+                        The lone knight's sword
+                    </div>
+
+                    <div class="sword-container__price">
+                        100 gold
+                    </div>
+
+                    <button class="sword-container__buy">
+                        Buy
+                    </button>
                 </div>
 
-                <div class="alert-container__player-lose">
-                    YOU DIED!
+                <!-- Секретное оружие (название и цена) -->
+                <div class="city-store-container__item secret-container">
+                    <div class="secret-container__name">
+                        The unidentified rare weapon
+                    </div>
+
+                    <div class="secret-container__price">
+                        ???
+                    </div>
+
+                    <button class="secret-container__buy">
+                        Buy
+                    </button>
                 </div>
+
             </div>
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
