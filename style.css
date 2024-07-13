@@ -183,6 +183,14 @@ body {
     display: none;
 }
 
+.restart-btn {
+    display: none;
+}
+
+.city-btn {
+    display: none;
+}
+
 /* Объявления: */
 .alert-container {
     display: flex;

@@ -98,12 +98,10 @@
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
             <div class="gameplay-body__gameplay-btns gameplay-btns-container">
-                <button class="gameplay-btns-container__btn optional-btn">
-                    Restart game
-                </button>
+                
                 
                 <!-- Кнопки с вариантом выбора пути (на старте): "в город", "сражаться с врагами" -->
-                <button class="gameplay-btns-container__btn travel-option">
+                <button id="travel-to-the-city" class="gameplay-btns-container__btn travel-option">
                     Travel to the city
                 </button>
 
@@ -111,7 +109,16 @@
                     Fight enemies!
                 </button>
 
-                <!-- Кнопки с вариантом выбора врага -->
+                <!-- Игрок выбрал "в город": кнопка посещения магазина и покинуть город -->
+                <button id='magic-store' class="gameplay-btns-container__btn city-btn">
+                    Visit the magic store
+                </button>
+
+                <button id='leave-city' class="gameplay-btns-container__btn city-btn">
+                    Leave the city
+                </button>
+
+                <!-- Игрок выбрал "сражаться с врагами": Кнопки с вариантом выбора врага -->
                 <button id='boar_enemy' class="gameplay-btns-container__btn enemy-type">
                     Wild Boar
                 </button>
@@ -140,6 +147,11 @@
 
                 <button id='fight-again' class="gameplay-btns-container__btn player-win-fight-options">
                     Fight again!
+                </button>
+
+                <!-- Кнопки после сражения с врагом (игрок проиграл) -->
+                <button id="restart-game" class="gameplay-btns-container__btn restart-btn">
+                    Restart game
                 </button>
             </div>
            

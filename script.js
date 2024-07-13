@@ -142,7 +142,7 @@ function setAllMethodsForcharInfo() {
 }
 
 
-// Эти две функции, возможно НЕ нужны 9написал одну общую):
+// Эти две функции, возможно НЕ нужны (написал одну общую):
 // Функция №1 (рабочий вариант) сражения игрока с разными врагами (3 типа):
 function setPlayerEnemy(playerEnemy) { // сюда ч/з аргумент вызова функции передается враг игрока
     let charInfoObj = adventureGame[charInfoPos]; 
@@ -210,10 +210,10 @@ function findBoarEnemyObj() {
 }
 
 // Объявление переменной "wild_boar" с помощью деструктуризации объекта "enemyInfo" (когда объектов мало):
-const {wild_boar} = adventureGame[enemyInfoPos]; // результат: объект "wild_boar" и его свойства ключ: значение
+let {wild_boar} = adventureGame[enemyInfoPos]; // результат: объект "wild_boar" и его свойства ключ: значение
 // Два других врага:
-const {blackBrowedBear} = adventureGame[enemyInfoPos];
-const {dragon_steelwing} = adventureGame[enemyInfoPos];
+let {blackBrowedBear} = adventureGame[enemyInfoPos];
+let {dragon_steelwing} = adventureGame[enemyInfoPos];
 
 
 // Добавление метода fight_health_decrease для объекта "wild_boar" (эта функция, возможно, НЕ нужна):
@@ -275,17 +275,18 @@ function buyWeapon() {
 }
 
 
-// --------------------------------------------------------------------------------- //
-// --------------------- РАБОТА С ИНТЕРФЕЙСОМ И ОБЪЕКТАМИ ИГРЫ --------------------- //
 
-// ------ Стартовая страница (создание персонажа): ------ //
-// Отобразить таблицу с характеристиками созданного персонажа:
-function renderCreatedCharInfo() {
-    let charStats = document.querySelector('.game-start-page__char-stats');
-    charStats.style.display = 'flex';
-}
 
-// Добавить имя созданного персонажа к таблице с его характеристиками:
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ------------------------------------------------------ НАЧАЛО ИГРЫ (СОЗДАНИЕ ПЕРСОНАЖА) ------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+// Заполнение элемента-списка характеристик персонажа (имя, характеристики):
+// Добавить имя персонажа в элемент-список с его характеристиками:
 function addCharName() {
     let charNameValue = adventureGame[charInfoPos]['nick_name'];
     let charNameElem = document.querySelector('.char-stats__char-name');
@@ -294,13 +295,7 @@ function addCharName() {
     `;
 }
 
-// Скрыть поле ввода ника персонажа и кнопку создания персонажа:
-function hideCreateCharContainer() {
-    let createCharContainer = document.querySelector('.game-start-page__create-char');
-    createCharContainer.style.display = 'none';
-}
-
-// Отрисовка всех стартовых характеристик созданного персонажа: ////// --------------- надо подумать, как сделать эту функцию компактнее
+// Добавить характеристи созданного персонажа в его элемент-список:
 function addNewCharStatsValues() {
     let charStatsElemList = document.querySelectorAll('.stats-list__elem');
     let arr = Array.from(charStatsElemList);
@@ -331,7 +326,20 @@ function addNewCharStatsValues() {
     }
 }
 
-// Общая функция (создать персонажа):
+// Элемент-список с характеристикми персонажа заполнен:
+// Скрыть поле ввода ника персонажа и кнопку создания персонажа:
+function hideCreateCharContainer() {
+    let createCharContainer = document.querySelector('.game-start-page__create-char');
+    createCharContainer.style.display = 'none';
+}
+
+// Отображение элемента-списка (ЗАПОЛНЕННОГО) с характеристиками созданного персонажа:
+function renderCreatedCharInfoElem() {
+    let charStats = document.querySelector('.game-start-page__char-stats');
+    charStats.style.display = 'flex';
+}
+
+// ОБЩАЯ ФУНКЦИЯ: (создать персонажа: запускаются все вышенаписанные функции)
 function createNewCharacter(e) {
     let target = e.target;
 
@@ -349,13 +357,19 @@ function createNewCharacter(e) {
     // return charInfo; почему тут НЕ работает "return"?
 
     if (charInfo.nickName_listed) {
-        renderCreatedCharInfo(); // отображение стартовых характеристик созданного персонажа
-        addCharName(); // добавление имени персонажа
-        hideCreateCharContainer(); // скрыть поле ввода имени и кнопку создания персонажа
-        addNewCharStatsValues(); // заполнить информацию по характеристикам созданного персонажа
+        addCharName(); // добавить имя персонажа
+        addNewCharStatsValues(); // Добавить характеристи созданного персонажа
+        hideCreateCharContainer(); // Скрыть поле ввода ника и кнопку создания персонажа
+        renderCreatedCharInfoElem() // Отрисовать заполненный элемент с характеристиками персонажа
     }
 }
 document.addEventListener('click', createNewCharacter);
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// -------------------------------------------------- НАЧАЛО ИГРЫ (персонаж СОЗДАН, стартовая страница) ------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
 
 // ------ Отображение первой игровой страницы (начало игры): ------ //
@@ -433,7 +447,15 @@ showCharStatValuesBtn.addEventListener('click', showCharStatsValues);
 
 
 // ------ Отображение игровой страницы (fight enemies!): ------ //
+// скрыть кнопки опций путешествия ("в город", "сражаться с врагами")
+function hideTravelBtns() {
+    let playerTravelOptionBtns = document.querySelectorAll('.travel-option');
+    Array.from(playerTravelOptionBtns).forEach( elem => {
+        elem.style.display = 'none';
+    });
+}
 
+// показать кнопки выбора противника:
 function showEnemiesMenu() {
     let enemiesListBtns = document.querySelectorAll('.enemy-type');
 
@@ -441,10 +463,7 @@ function showEnemiesMenu() {
         elem.style.display = 'block';
     });
 
-    let playerTravelOptionBtns = document.querySelectorAll('.travel-option');
-    Array.from(playerTravelOptionBtns).forEach( elem => {
-        elem.style.display = 'none';
-    });
+    hideTravelBtns(); // скрыть кнопки опций путешествия ("в город", "сражаться с врагами")
 
     // рандомная подсказка из массива подсказок, на каждом меню?
     let pageTooltip = document.querySelector('.gameplay-body__descrip');
@@ -575,12 +594,22 @@ function returnSelectedEnemyObj(inputPlayerEnemy) {
     return selectedPlayerEnemy;
 }
 
-/* ОБЩАЯ ФУНКЦИЯ И ВСПОМОГАТЕЛЬНАЯ ФУКНЦИИ перед началом процесса боя): */
+// Добавляет в объект выбранного игроком противника характеристику стандартного значения ХП врага (для возможности повторного боя с противником);
+function addStandardHealthValueToPlayerEnemy() {
+    if (!selectedPlayerEnemy) {
+        return;
+    }
+
+    selectedPlayerEnemy['standardHealthValue'] = selectedPlayerEnemy['health'];
+}
+
+/* ОБЩАЯ ФУНКЦИЯ И ВСПОМОГАТЕЛЬНАЯ ФУНКЦИИ перед началом процесса боя): */
 
 // ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ (вызывается в общей):
 /* выбор игроком противника, подготовка к бою (отрисовка интерфейса, добавление методов к объектам и т.д.) */
 function setupAllOptionsBeforeBattle(battleOptionsAndEnemyType) {
     returnSelectedEnemyObj(battleOptionsAndEnemyType); // возврат объекта выбранного противника (переменная "selectedPlayerEnemy"), используется в др. функциях
+    addStandardHealthValueToPlayerEnemy(); // стандартное значение хп (возволяет повторить бой с противником снова);
     addHealthLossForPlayer(battleOptionsAndEnemyType); // добавление метода потери хп к объекту игрока
     addGainGold(); // добавление метода накопления золота к объекту игрока (при победе игрока в бою);
     addHealthLossForEnemy(battleOptionsAndEnemyType) // добавление метода потери хп к объекту врага
@@ -618,6 +647,7 @@ document.addEventListener('click', choosePlayerEnemyAndStartFight);
 // ---------------------------------------------------------------- ПРОЦЕСС БОЯ ------------------------------------------------------------------------------ //
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
+// -------------------------------------- //
 // ------------- НАЧАЛО БОЯ ------------- //
 
 // Процесс боя между игроком и выбранным противником:
@@ -630,7 +660,7 @@ function playerAndEnemyFightProcess(e) {
     }
 
     let fleeBtn = document.querySelector('#flee-from-enemy'); // после старта боя кнопка возможности побега - дизейблится
-    fleeBtn.disabled = true;        
+    fleeBtn.disabled = true;
     
     playerAttack(selectedPlayerEnemy);
 
@@ -646,7 +676,7 @@ document.addEventListener('click', playerAndEnemyFightProcess);
 
 // атака игрока:
 function playerAttack(inputPlayerEnemy) { // работает по клику все ок
-    let enemyHealthElem = document.querySelector('.enemy-health');
+    let enemyHealthElem = document.querySelector('.enemy-health');    
 
     if (attacksCounter % 2 === 0) {
         inputPlayerEnemy['fight_health_decrease']();
@@ -659,7 +689,7 @@ function playerAttack(inputPlayerEnemy) { // работает по клику в
 }
 
 // атака противника:
-function enemyAttack() { // все работает, но эта функция не должна вызываться, когда ХП противника меньше 0
+function enemyAttack() {
     
     let attackBtn = document.querySelector('#attack-enemy');
     attackBtn.disabled = false; // как проходит атака противника, кнопка атаки для игрока становится доступна
@@ -670,13 +700,26 @@ function enemyAttack() { // все работает, но эта функция 
 
     if (attacksCounter % 2 !== 0) {
         // Проверка хп врага: если у противника нет хп, он не атакует игрока в ответ (даже если идет ход противника)
-        if ( isEnemyDead(selectedPlayerEnemy) ) {            
+        if ( isEnemyDead(selectedPlayerEnemy) ) {
+            alertAfterBattlePlayerWins();
+            attackBtn.disabled = true;
+
+            setTimeout( () => { // ч/з 2 секунды после победы игрока, рендер нового интерфейса
+                setupAllOptionsAfterBattle();
+            }, 2000);
+            
             return;
         }
 
         charInfoObj.player_fight_health_decrease();
         battleHealthDecreaseAnimation(playerHealthElem);
-        fillCharStatsValues();        
+        fillCharStatsValues();
+
+        // Проверка хп игрока: если хп нет, кнопка атаки дизейблится и выводится сообщение о проигрыше, отрисовывается новый интерфейс
+        if ( isPlayerCharacterDead() ) {
+            resetGameInterface();
+            attackBtn.disabled = true;
+        }
         
         attacksCounter++;
         return charInfoObj;
@@ -685,7 +728,7 @@ function enemyAttack() { // все работает, но эта функция 
 
 // Проверка убит ли противник игрока:
 function isEnemyDead(inputPlayerEnemy) {
-    if (inputPlayerEnemy.health <= 0) {
+    if (inputPlayerEnemy.health <= 0) {        
         return true;
     }
 }
@@ -703,28 +746,27 @@ function battleHealthDecreaseAnimation(inputPlayerOrEnemy) {
 
 
 
-// Файт закончился победой игрока:
-// Скрыть кнопки flee и attack,
-// Скрыть характеристики и имя врага
-// насыпать 10 голды игроку
-// Отрисовка сообщения - победа игрока (на 2 секунды)
-// Далее отрисовка кнопок "back to the city" и "start again" (хп игрока при повторном сражении не восстанавливаются - только при посещении города)
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------- ПРОЦЕСС БОЯ ОКОНЧЕН ---------------------------------------------------------------------- //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 
+// ----------------------------------------- //
+// ------------- ПОБЕДА ИГРОКА ------------- //
 
-// сообщение о победе игрока (на 2 секунды):
+// Сообщение о победе игрока (отображается 2 секунды):
 function alertAfterBattlePlayerWins() {
-    let plaerWinAlertElem = document.querySelector('.alert-container__player-win');    
+    let playerWinAlertElem = document.querySelector('.alert-container__player-win');    
     
     if ( isEnemyDead(selectedPlayerEnemy) ) {
-        plaerWinAlertElem.style.visibility = 'visible';
+        playerWinAlertElem.style.visibility = 'visible';
 
-        setTimeout( () => {
-            plaerWinAlertElem.style.visibility = 'hidden';
+        setTimeout( () => { // после победы игрока показать сообщение о победе на 3 секунды
+            playerWinAlertElem.style.visibility = 'hidden';
         }, 2000)
     }
 }
 
-// скрытие кнопок комбата:
+// Скрываем кнопки процесса боя:
 function hideCombatBtns() {
     let combatOptionsBtns = document.querySelectorAll('.combat-options');
     Array.from(combatOptionsBtns).forEach( btn => {
@@ -732,7 +774,7 @@ function hideCombatBtns() {
     })
 }
 
-// отображение кнопок повтора боя и возвращения в город:
+// Отображение кнопок повтора боя и возвращения в город:
 function showPlayerWinFightBtns() {
     let playerWinFightBtns = document.querySelectorAll('.player-win-fight-options');
     Array.from(playerWinFightBtns).forEach( btn => {
@@ -740,7 +782,7 @@ function showPlayerWinFightBtns() {
     })
 }
 
-// скрыть элемент с информацией об имени и характеристиках противника:
+// Скрываем элемент с информацией об имени и характеристиках противника:
 function hideEnemyNameAndStats() {
     let enemyNameAndStatsElem = document.querySelector('.enemy-stats-container');
     enemyNameAndStatsElem.style.visibility = 'hidden';
@@ -752,35 +794,382 @@ function showNewTooltip() {
     pageToolTip.innerHTML = 'In battles with opponents, you have a chance to get gold and experience';
 }
 
-// Насыпать объекту игрока 10 голды:
+// Добавляем метод к объекту игрока (получение золота: 10 золота за победу над врагом):
 function addGoldtoPlayerIfWinFight() {
     let charInfoObj = adventureGame[charInfoPos];
     charInfoObj['gold_increase']();
 }
 
-// Обновить все характеристики персонажа:
+// Отрисовать и обновить все характеристики персонажа (все, кроме ХП):
 function refillCharStatsValues() {
     fillCharStatsValues();
 }
 
-
+// ОБЩАЯ ФУНКЦИЯ: ПОБЕДА ИГРОКА (обновить интерфейс, данные объектов и т.д.). Вызываются все функции, кроме отображения сообщения о победе:
+// Данная функция вызывается внутри функции "enemyAttack()", т.к. там идет проверка на ХП врага
 function setupAllOptionsAfterBattle() {
+    if ( !isEnemyDead(selectedPlayerEnemy) ) {
+        return;
+    }
+
     if ( isEnemyDead(selectedPlayerEnemy) ) {
-        hideCombatBtns();
-        showPlayerWinFightBtns();
-        alertAfterBattlePlayerWins();
-        hideEnemyNameAndStats();
-        showNewTooltip();
-        addGoldtoPlayerIfWinFight();
-        refillCharStatsValues();
-    }    
+        hideCombatBtns(); // скрыть кнопки для процесса сражения (атака, бегство)
+        showPlayerWinFightBtns(); // отобразить кнопки вариантов действий игрока (при победе игрока)        
+        hideEnemyNameAndStats(); // скрыть характеристики поверженного врага
+        showNewTooltip(); // отобразить новую подсказку
+        addGoldtoPlayerIfWinFight(); // добавить метод получения золота к объекту персонажа игрока
+        refillCharStatsValues(); // перезаполнить и отрисовать новые (если есть) характеристики игрока
+    }
+};
+
+
+// ------------------------------------------------------------------------------- //
+// ------------- ПОБЕДА ИГРОКА (ИГРОК ВЫБИРАЕТ - ПОВТОРИТЬ СРАЖЕНИЕ) ------------- // 
+
+// Обновляет в объекте врага значение его хп (для повторного боя):
+function renewSelectedPlayerEnemyHeatlh(inputPlayerEnemy) { // запускать эту функцию при желани игрока повторить бой или возврате в город (неважно)
+    inputPlayerEnemy.health = inputPlayerEnemy['standardHealthValue'];
+};
+
+// Обнуляем счетчик атак (для начала повторного боя):
+function resetAttacksCounter() {
+    attacksCounter = 0;
 }
 
-// Если игрок клацает fight-again:
-// Обновить все характеристики врага (сделать полными снова):
-// После боя объект поверженного врага пустой, нужно обновить его начальные характеристики и снова их отрисовать (а для игрока хп не обновлять)
-// Обновлять attacksCounter = 0; (перед каждым боем)
-// selectedPlayerEnemy обновится автоматически с обновленим хп объекта; задай "defaultHealthValue" такое же как хп и бери значение из него;
+// скрываем кнопки выбора опций игроком (при победе игрока):
+function hidePlayerWinFightBtns() {
+    let playerWinFightBtns = document.querySelectorAll('.player-win-fight-options');
+    Array.from(playerWinFightBtns).forEach( btn => {
+        btn.style.display = 'none';
+    })
+}
+
+// ОБЩАЯ ФУНКЦИЯ: ПОВТОРИТЬ СРАЖЕНИЕ
+function repeatFightWithSameEnemy(e) {
+    let target = e.target;
+
+    if (target.id != 'fight-again') {
+        return;
+    }
+
+    renewSelectedPlayerEnemyHeatlh(selectedPlayerEnemy);
+    resetAttacksCounter();
+    showCombatBtns();
+    fillEnemyStatsValues(selectedPlayerEnemy);
+    showEnemyName(selectedPlayerEnemy);
+    hidePlayerWinFightBtns();
+
+    let attackBtn = document.querySelector('#attack-enemy');
+    attackBtn.disabled = false;
+
+    let fleeBtn = document.querySelector('#flee-from-enemy');
+    fleeBtn.disabled = false;
+
+}
+document.addEventListener('click', repeatFightWithSameEnemy);
+
+
+// ------------------------------------------------------------------------------ //
+// ------------- ПРОИГРЫШ ИГРОКА (проверка и отрисовка интерфейса): ------------- //
+
+// Проверка хп игрока, функция вызывается в функции "enemyAttack()":
+function isPlayerCharacterDead() {
+    if (charInfo['health'] <= 0) {
+        return true;
+    }
+}
+
+// Показывается сообщение о проигрыше игрока (на 2 секунды):
+function alertAfterBattlePlayerLose() {
+    let playerLoseAlertElem = document.querySelector('.alert-container__player-lose');    
+    
+    if ( isPlayerCharacterDead() ) {
+        playerLoseAlertElem.style.visibility = 'visible';
+
+        setTimeout( () => { // после проигрыша игрока показать сообщение о проигрыше на 2 секунды
+            playerLoseAlertElem.style.visibility = 'hidden';
+            addCharNameWhenPlayerLose();
+        }, 2000)
+    }
+}
+
+// Изменяется имя персонажа:
+function addCharNameWhenPlayerLose() {
+    let charNameValue = adventureGame[charInfoPos]['nick_name'];
+    let charNameElem = document.querySelector('.stats-container__char-name');
+    charNameElem.innerHTML = `
+        <span>We lost our hero: ${charNameValue}</span>
+    `;
+}
+
+// Отрисовка кнопки рестарта игры:
+function showRestartBtn() {
+    let restartBtn = document.querySelector('.restart-btn');
+    restartBtn.style.display = 'block';
+}
+
+// ОБЩАЯ ФУНКЦИЯ: Проигрыш игрока (отрисовка нового интерфейса)
+
+// Эта функция вызывается в функции "enemyAttack()"
+function resetGameInterface() {
+    if ( isPlayerCharacterDead() ) {
+        alertAfterBattlePlayerLose();
+        hideCombatBtns();
+        resetAttacksCounter();
+        hideEnemyNameAndStats();
+        showCharStatsValues();
+        showRestartBtn();
+    }
+}
+
+
+// -------------------------------------------------------------------------------------------------------------------------------------------- //
+// --------------------------------------------------- ПРОИГРЫШ ИГРОКА (РЕСТАРТ ИГРЫ): -------------------------------------------------------- //
+
+// ПОЛНАЯ очистка всех переменных, методов объектов и т.д.:
+
+// --- ФУНКЦИИ ДЛЯ РАБОТЫ С ЭЛЕМЕНТАМИ СТРАНИЦЫ (интерфейс и т.д.): ---
+
+// РЕСТАРТ СТРАНИЦА: скрыть кнопку рестарта игры при клике на нее (ee срабатывании):
+function hideRestartBtn() {
+    let restartBtn = document.querySelector('.restart-btn');
+    restartBtn.style.display = 'none';
+}
+
+// СТАРТОВАЯ СТРАНИЦА: отображение на стартовой странице элемента для создания нового персонажа (поле "input" и кнопка "create character"):
+function showCreateCharContainer() {
+    let createCharContainer = document.querySelector('.game-start-page__create-char');
+    createCharContainer.style.display = 'flex';
+}
+
+// СТАРТОВАЯ СТРАНИЦА: скрыть элемент - список с именем и характеристиками персонажа:
+function hideCreatedCharInfoElem() {
+    let charStats = document.querySelector('.game-start-page__char-stats');
+    charStats.style.display = 'none';
+}
+
+// СТАРТОВАЯ СТРАНИЦА: очистка поля ввода ника персонажа (input):
+function resetNickNameInputValue() {
+    let charNameInputElem = document.querySelector('.create-char-container__input');
+    charNameInputElem.value = '';
+}
+
+// ГЕЙМПЛЕЙ СТРАНИЦА: отрисовка кнопок путешествия для старта игры ("в город", "в атаку"):
+function showTravelBtns() {
+    let playerTravelOptionBtns = document.querySelectorAll('.travel-option');
+    Array.from(playerTravelOptionBtns).forEach( elem => {
+        elem.style.display = 'block';
+    });
+}
+
+// СРАЖЕНИЕ СТРАНИЦА: разблокировать кнопки сражения:
+function unlockCombatBtns() {
+    let combatOptionsBtns = document.querySelectorAll('.combat-options');
+    Array.from(combatOptionsBtns).forEach( btn => {
+        btn.disabled = false;
+    })
+}
+
+// --- ФУНКЦИИ ДЛЯ РАБОТЫ С ИГРОВЫМИ ОБЪЕКТАМИ И ПЕРЕМЕННЫМИ: ---
+
+// Ресет имени персонажа:
+function resetCharName() {
+    charInfo['nick_name'] = '';
+    charInfo.nickName_listed = false;
+
+    return charInfo;
+}
+
+// Полный ресет всех объектов игры (присваиваю массиву "adventureGame" его изначальные значения):
+function resetAdventureGameObjects() {
+    adventureGame = [
+        'testValue',
+        
+        charInfo = {
+            'nick_name': '',
+            'nickName_listed': false,
+            health: 40,
+            damage: 10,
+            exp: 0,
+            level: 0,
+            gold: 0,
+        },    
+        
+        enemyInfo = {
+            'wild_boar': {
+                health: 30,
+                damage: 10,
+                name: 'Wild Boar',
+            },
+    
+            blackBrowedBear: {
+                health: 100,
+                damage: 50,
+                name: 'Felwood Giant Bear',
+            },
+    
+            'dragon_steelwing': {
+                health: 250,
+                damage: 100,
+                name: 'Dragon Steelwing',
+            }
+        },
+    
+        shop = {
+            weapons_price: {
+                dagger: 50,
+                sword: 100,
+            },
+    
+            health: '10'
+        },    
+        
+        weaponsDamage = {
+            dagger: 20,
+            sword: 50,
+        }
+    ];
+}
+
+// Ресет значения переменной "selectedPlayerEnemy":
+function resetSelectedPlayerEnemy() {
+    selectedPlayerEnemy = '';
+}
+
+// Ресет значения переменной "attacksCounter":
+function resetAttacksCounter() {
+    attacksCounter = 0;
+}
+
+// Ресет значений переменных содержащих объекты из "enemyInfo" (объявлены и присвоены значения при помощи деструктуризации):
+function resetEnemyObjectVariables() {
+    ({wild_boar, blackBrowedBear, dragon_steelwing} = adventureGame[enemyInfoPos]); // при деструктуризации внутри функции нужно все указывать в круглых скобках
+}
+
+// ОБЩАЯ ФУНКЦИЯ (РЕСТАРТ ИГРЫ): часть функций отсюда (для работы со страницами игры, возможно, стоит перенести в соответствующие разделы)
+function gameRestart(e) {
+    let target = e.target;
+
+    if (target.id !== 'restart-game') {
+        return;
+    }
+    
+    let startPage = document.querySelector('.game-start-page');
+    startPage.style.display = 'flex';
+
+    let gameplayPage = document.querySelector('.gameplay-page');
+    gameplayPage.style.display = 'none';
+
+    // Функции для работы с кнопками:
+    hideRestartBtn(); // скрыть кнопку рестарта
+    showTravelBtns(); // отобразить кнопки для путешествий
+    unlockCombatBtns(); // разблокировать кнопки сражения
+
+    // Функции для работы с объектами и переменными:
+    resetAdventureGameObjects(); // ресет всех объектов игры
+    resetEnemyObjectVariables(); // ресет значений переменных wild_boar; blackBrowedBear; dragon_steelwing
+    resetSelectedPlayerEnemy(); // ресет значения выбранного противника
+    resetAttacksCounter(); // ресет переменной - количетсва совершенных атак
+    resetCharName(); // ресет имени персонажа (возможно можно не использовать)
+
+    // Функции для работы с прочими элементами интерфейса:
+    showCreateCharContainer(); // отобразить кнопку "input" и кнопку "create character"
+    hideCreatedCharInfoElem(); // скрыть элемент в характеристиками созданного персонажа
+    resetNickNameInputValue(); // очистка поля "input"
+}
+document.addEventListener('click', gameRestart);
+
+
+
+
+
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------- РАБОТАЮ ТУТ (ЗАВЕРШЕНИЕ КОДА) ------------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+
+// -------------------------------------------------------------- //
+// ------------- БЕГСТВО (игрок сбегает с поля боя) ------------- //
+function runForestRun(e) {
+    let target = e.target;
+
+    if (target.id !== 'flee-from-enemy') {
+        return;
+    }
+
+    hideCombatBtns();
+    hideEnemyNameAndStats();
+
+    showTravelBtns();
+}
+document.addEventListener('click', runForestRun);
+
+
+// -------------------------------------------------------------- //
+// ------------- ИГРОК ВЫБИРАЕТ ПОСЕЩЕНИЕ ГОРОДА ---------------- //
+function hideCityBtns() {
+    let playerCityBtns = document.querySelectorAll('.city-btn');
+    Array.from(playerCityBtns).forEach( elem => {
+        elem.style.display = 'none';
+    });
+}
+
+function showCityBtns() {
+    let playerCityBtns = document.querySelectorAll('.city-btn');
+    Array.from(playerCityBtns).forEach( elem => {
+        elem.style.display = 'block';
+    });
+}
+
+// Посещение города:
+function travelToTheCity(e) {
+    let target = e.target;
+
+    if (target.id !== 'travel-to-the-city') {
+        return;
+    }
+    
+    hideTravelBtns();
+    showCityBtns();
+    // функция отображения подсказки
+}
+document.addEventListener('click', travelToTheCity);
+
+/////////
+// Покинуть город:
+function leaveTheCity(e) {
+    let target = e.target;
+
+    if (target.id !== 'leave-city') {
+        return;
+    }
+
+    showTravelBtns();
+    hideCityBtns();
+    // функция отображения подсказки
+}
+document.addEventListener('click', leaveTheCity);
+
+//////
+// Посещение городского магазина:
+function visitMagicStore() {
+    // отобразить кнопки покупки напротив каждого оружия (два оружия, две кнопки); секретное оружие, которое можно купить за хп (сделать тултип - "подумай дважды")
+    // отобразить кнопку возможности покинуть город
+    // если у игрока недостаточно золота - кнопка покупки оружия будет задизейблена (всегда доступна только кнопка покупки орижя за хп);
+    // после покупки любого оружия за голд кнокпка покупки также дизейблится
+    // после покупки оружия за хп, магазин станвоится не доступен вовсе
+
+}
+
+
+
+
+
+
+
+
+
+// Разберись с "toggle" (переключатель отображения характеристик персонажа), иногда он скрыт на старте файта - а должен отображаться
 
 
 // Напиши функцию отображения рандомной подсказки из двух массивов (мирные подсказки и подсказки во время боя);
@@ -806,6 +1195,8 @@ function setupAllOptionsAfterBattle() {
     Как переписать функцию "playerAndEnemyFight()" боя игрока с противником из одной большой в несколько маленьких (не удается правильно возвращать нужные значения).
 - Четвертый:
     Подумай, как компактнее написать код функции "fillCharStatsInfoElements()". Заполняет несколько элементов "li" информацией о характеристиках персонажа
+- Пятый:
+    Как сохранять объект (например, для рестарта игры), не мутировать его. Создавать резервную копию и работать с ней, а оригинал не трогать?
 */
 
 
