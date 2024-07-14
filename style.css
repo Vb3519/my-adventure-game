@@ -99,13 +99,13 @@ body {
 .stats-container__values {
     margin: 0;
     padding-left: 0;
-    display: none;
+    display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.stats-container__values__active {
-    display: flex;
+.stats-container__values__hidden {
+    display: none;
 }
 
 
@@ -220,12 +220,28 @@ body {
 .city-store-container__item {
     display: flex;
     gap: 1rem;
+    align-items: center;
+}
+
+.health-container__price {
+    display: flex;
+    gap: 0.2rem;
+    margin-left: 5.2rem;
+}
+
+.dagger-container__price {
+    display: flex;
+    gap: 0.2rem;
 }
 
 .sword-container__price {
-    margin-left: 2.6rem;
+    display: flex;
+    gap: 0.2rem;
+    margin-left: 2.5rem;
 }
 
 .secret-container__price {
-    margin-left: 2.6rem;    
+    display: flex;
+    gap: 0.2rem;
+    margin-left: 0.9rem;
 }

@@ -88,39 +88,73 @@
         <div class="gameplay-page__body gameplay-body">
             <div class="gameplay-body__alert alert-container">               
 
-                <div class="alert-container__player-alert">
+                <div id="game-alert" class="alert-container__player-alert">
                     The first thing i need to do is visit the tavern...
                 </div>
             </div>
 
             <!-- Городской магазин: -->
             <div class="gameplay-body__city-store city-store-container">
+
+                <!-- Покупка очков здоровья (название и цена) -->
+                <div class="city-store-container__item health-container">
+                    <div class="health-container__name">
+                        Add Health Points
+                    </div>
+
+                    <div class="health-container__price health-price">
+                        <div class="health-price__value price-value">
+                            
+                        </div>
+
+                        <div class="health-price__type">
+                            gold
+                        </div>
+                    </div>
+
+                    <button id="buy-health" class="health-container__buy buy-goods">
+                        Buy
+                    </button>
+                </div>
+                
                 <!-- Кинжал (название и цена) -->
                 <div class="city-store-container__item dagger-container">
                     <div class="dagger-container__name">
                         The dagger of the unlucky thief
+                    </div>                    
+
+                    <div class="dagger-container__price dagger-price">
+                        <div class="dagger-price__value price-value">
+                            
+                        </div>
+
+                        <div class="dagger-price__type">
+                            gold
+                        </div>
                     </div>
 
-                    <div class="dagger-container__price">
-                        50 gold
-                    </div>
-
-                    <button class="dagger-container__buy">
+                    <button id="dagger-weap" class="dagger-container__buy buy-goods">
                         Buy
                     </button>
                 </div>
                
-                <!-- Кинжал (название и цена) -->
+                <!-- Меч (название и цена) -->
                 <div class="city-store-container__item sword-container">
                     <div class="sword-container__name">
                         The lone knight's sword
+                    </div>                    
+
+                    <div class="sword-container__price sword-price">
+                        <div class="sword-price__value price-value">
+                            
+                        </div>
+
+                        <div class="sword-price__type">
+                            gold
+                        </div>
                     </div>
 
-                    <div class="sword-container__price">
-                        100 gold
-                    </div>
-
-                    <button class="sword-container__buy">
+                    <button id="sword-weap" class="sword-container__buy buy-goods">
                         Buy
                     </button>
                 </div>
@@ -129,13 +163,19 @@
                 <div class="city-store-container__item secret-container">
                     <div class="secret-container__name">
                         The unidentified rare weapon
+                    </div>                    
+
+                    <div class="secret-container__price secret-price">
+                        <div class="secret-price__value">
+                            ???
+                        </div>
+
+                        <div class="secret-price__type">
+                            ???
+                        </div>
                     </div>
 
-                    <div class="secret-container__price">
-                        ???
-                    </div>
-
-                    <button class="secret-container__buy">
+                    <button id="secret-weap" class="secret-container__buy">
                         Buy
                     </button>
                 </div>
@@ -143,8 +183,7 @@
             </div>
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
-            <div class="gameplay-body__gameplay-btns gameplay-btns-container">
-                
+            <div class="gameplay-body__gameplay-btns gameplay-btns-container">                
                 
                 <!-- Кнопки с вариантом выбора пути (на старте): "в город", "сражаться с врагами" -->
                 <button id="travel-to-the-city" class="gameplay-btns-container__btn travel-option">
