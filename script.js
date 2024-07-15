@@ -78,13 +78,13 @@ function setCharName() {
 }
 
 // Добавление метода "health_increase" (покупка хп в магазине города):
-// Вариант №1:
+// Вариант №1:health_increase
 function addHealthPoints_Increase() {
     let charInfoObj = adventureGame[charInfoPos]; // подобие функции - конструктора (НЕ используется "new" при вызове)
 
     charInfoObj.health_increase = function() {
-        charInfoObj.health += 10;
-        charInfoObj.current_max_hp_value += 10;
+        charInfoObj.health += 20;
+        charInfoObj.current_max_hp_value += 20;
         return charInfoObj; // если убрать "return charInfoObj" - не будет работать цепочка вызовов метода объекта
     }
 
@@ -278,7 +278,6 @@ function addHealthLossForPlayer(inputPlayerEnemy) {
     }
 }
 
-// Добавить шанс промаха в логику боя???
 
 
 
@@ -441,6 +440,7 @@ function startGame(e) {
     gameplayPage.style.display = 'flex';
     fillCharStatsValues(); // заполнить характеристики персонажа
     addCharNameToCharStats(); // добавить имя персонажа к его характеристикам
+    showRandomTooltips(cityTooltips); // отображение рандомных игровых подсказок (в зависимости от типа интерфейса ("городской" / "сражение"))
 }
 document.addEventListener('click', startGame);
 
@@ -479,9 +479,10 @@ function showEnemiesMenu() {
 
     hideTravelBtns(); // скрыть кнопки опций путешествия ("в город", "сражаться с врагами")
 
-    // рандомная подсказка из массива подсказок, на каждом меню?
-    let pageTooltip = document.querySelector('.gameplay-body__descrip');
-    pageTooltip.innerHTML = 'Choose your enemy wisely...';
+    
+    showRandomTooltips(combatTooltips); // отображение случайной подсказки (строки 443, 483)
+    // let pageTooltip = document.querySelector('.gameplay-body__descrip');
+    // pageTooltip.innerHTML = 'Choose your enemy wisely...';
 }
 const enemiesMenuBtn = document.querySelector('#enemies-menu');
 enemiesMenuBtn.addEventListener('click', showEnemiesMenu);
@@ -636,7 +637,7 @@ function setupAllOptionsBeforeBattle(battleOptionsAndEnemyType) {
     fillEnemyStatsValues(battleOptionsAndEnemyType); // отрисовка характеристик врага
     showEnemyName(battleOptionsAndEnemyType); // отрисовка имени врага
     hideEnemySelectionList(); // скрываем кнопки выбора противника "boar", "bear", "dragon"
-    playerPrepForBattle(); // раскрытие характеристик игрока, отрисовка кнопок "Flee" и "Attack!", смена подсказки
+    playerPrepForBattle(); // раскрытие характеристик игрока, отрисовка кнопок "Flee" и "Attack!", смена подсказки    
 }
 
 // ОБЩАЯ ФУНКЦИЯ: по клику на кнопку "enemy-type" ("boar", "bear", "dragon"), игрок выбирает противника (выполняются все функции, указанные во вспомогательной):
@@ -658,6 +659,7 @@ function choosePlayerEnemyAndStartFight(e) {
     if (target.id === 'dragon_enemy') {
         setupAllOptionsBeforeBattle(dragon_steelwing);
     }
+    showRandomTooltips(combatTooltips); // отображение случайной подсказки (строки 443, 483, 662)
 }
 document.addEventListener('click', choosePlayerEnemyAndStartFight);
 
@@ -666,6 +668,70 @@ document.addEventListener('click', choosePlayerEnemyAndStartFight);
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
 // ---------------------------------------------------------------- ПРОЦЕСС БОЯ ------------------------------------------------------------------------------ //
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+
+
+// ------------------------------------------------------------------------------- //
+// --------------------- ШАНС ПРОМАХА (игрока по противнику) В БОЮ --------------- //
+
+// Генерация рандомного числа (диапазон от 1 до 4) для определения шанса промаха (25%):
+function returnRandomNumberForMissChance() {
+    let missChanceValue = Math.floor(Math.random() * (5 - 1) + 1); // сгенерированное число НЕ менее (и может быть равно min) и НЕ более и != max (т.е. диапазон от 1 до 4)
+    return missChanceValue; // шанс промаха 25%;
+}
+
+// Функция шанса промаха игрока по врагу (вызывается внутри функции "playerAttack()" ):
+function combatPlayerMissChance(inputPlayerEnemy, enemyHealthElem) {
+    if (returnRandomNumberForMissChance() <= 1) { // если сгенерировано  число 1 - это промах;
+
+        alertPlayerAttackMiss(); // обхявление о промахе игрока
+        battlePlayerAttackMissAnimation(enemyHealthElem); // анимация промаха игрока
+        fillEnemyStatsValues(inputPlayerEnemy); // перезаполнить характеристики врага
+
+        attacksCounter++;
+        return inputPlayerEnemy;
+
+    } else {
+        inputPlayerEnemy['fight_health_decrease']();
+        battleHealthDecreaseAnimation(enemyHealthElem);
+        fillEnemyStatsValues(inputPlayerEnemy);
+
+        attacksCounter++;
+        return inputPlayerEnemy;
+    }
+};
+
+function randomCharacterAlerts(inputAlertsArr) {
+    let alertNumber= Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно
+    
+    let alertElem = document.querySelector('.alert-container__player-alert');
+    alertElem.innerHTML = `
+        ${adventureGame[1].nick_name}: ${inputAlertsArr[alertNumber]}
+    `;
+
+    alertElem.style.visibility = 'visible';
+}
+
+// Объявление о промахе атаки игрока:
+function alertPlayerAttackMiss() {   
+    
+    randomCharacterAlerts(missAlerts); // реплики персонажа в зависимости от его местоположения
+
+    let playerMissAlertElem = document.querySelector('.alert-container__player-alert');
+    setTimeout( () => {
+        playerMissAlertElem.style.visibility = 'hidden'
+    }, 1000) // через 1 секунду скрывает сообщение о промахе персонажа
+}
+
+// Анимация промаха атаки игрока:
+function battlePlayerAttackMissAnimation(inputPlayerOrEnemy) {    
+    inputPlayerOrEnemy.style.color = 'black';
+    inputPlayerOrEnemy.style.fontWeight = 'bold';
+
+    setTimeout( () => {
+        inputPlayerOrEnemy.style.color = 'black';
+        inputPlayerOrEnemy.style.fontWeight = 'normal';
+    }, 1000)
+}
 
 // -------------------------------------- //
 // ------------- НАЧАЛО БОЯ ------------- //
@@ -699,12 +765,15 @@ function playerAttack(inputPlayerEnemy) { // работает по клику в
     let enemyHealthElem = document.querySelector('.enemy-health');    
 
     if (attacksCounter % 2 === 0) {
-        inputPlayerEnemy['fight_health_decrease']();
-        battleHealthDecreaseAnimation(enemyHealthElem);
-        fillEnemyStatsValues(inputPlayerEnemy);       
+        combatPlayerMissChance(inputPlayerEnemy, enemyHealthElem); // функция боя с генерацией шанса промаха (25%)
 
-        attacksCounter++;
-        return inputPlayerEnemy;
+        
+        // inputPlayerEnemy['fight_health_decrease']();
+        // battleHealthDecreaseAnimation(enemyHealthElem);
+        // fillEnemyStatsValues(inputPlayerEnemy);
+
+        // attacksCounter++;
+        // return inputPlayerEnemy;
     }    
 }
 
@@ -775,11 +844,11 @@ function battleHealthDecreaseAnimation(inputPlayerOrEnemy) {
 
 // Сообщение о победе игрока (отображается 2 секунды):
 function alertAfterBattlePlayerWins() {
-    let charNameValue = adventureGame[charInfoPos]['nick_name'];
+
+    randomCharacterAlerts(battleAlerts); // реплики персонажа в зависимости от его местоположения (строки 701, 846,)
 
     let playerWinAlertElem = document.querySelector('.alert-container__player-alert');
-    playerWinAlertElem.innerHTML = `${charNameValue}: Okay, it was easy...`;
-    
+
     if ( isEnemyDead(selectedPlayerEnemy) ) {
         playerWinAlertElem.style.visibility = 'visible';
 
@@ -881,6 +950,7 @@ function repeatFightWithSameEnemy(e) {
     fillEnemyStatsValues(selectedPlayerEnemy);
     showEnemyName(selectedPlayerEnemy);
     hidePlayerWinFightBtns();
+    showRandomTooltips(combatTooltips); // отображение случайной подсказки (строки 443, 483, 662, 953)
 
     let attackBtn = document.querySelector('#attack-enemy');
     attackBtn.disabled = false;
@@ -1124,6 +1194,10 @@ function gameRestart(e) {
     showCreateCharContainer(); // отобразить кнопку "input" и кнопку "create character"
     hideCreatedCharInfoElem(); // скрыть элемент в характеристиками созданного персонажа
     resetNickNameInputValue(); // очистка поля "input"
+
+    // Городской магазин:
+    showSecretWeapElem(); // отобразить секретное орежие в городе (при рестарте). По умолчанию доступно только при первом посещении города (до боя с врагом).
+    showDaggerInSecretShop(); // отобразить даггер (при рестарте), если было куплено секретное оружие
 }
 document.addEventListener('click', gameRestart);
 
@@ -1192,6 +1266,20 @@ function healthRegenInCityAnimation() {
     }, 2000)
 }
 
+// Если игрок посещает город впервые только после боя с врагом (секретное оружие в магазине города - недоступно):
+function hideSecretWeapElem() {
+    let secretWeapElem = document.querySelector('.city-store-container__item.secret-container');
+    if (adventureGame[charInfoPos].health > 40 || adventureGame[charInfoPos].health < 40) {
+        secretWeapElem.style.display = 'none';
+    }
+}
+
+// Отобразить секретное оружие в магазине города:
+function showSecretWeapElem() {
+    let secretWeapElem = document.querySelector('.city-store-container__item.secret-container');
+    secretWeapElem.style.display = 'flex';
+}
+
 // ОБЩАЯ ФУНКЦИЯ (вернуться в город после боя):
 function homeSweetHome(e) {
     let target = e.target;
@@ -1200,6 +1288,9 @@ function homeSweetHome(e) {
         return;
     }
 
+    hideSecretWeapElem(); // скрыть секретное оружие в магазине города
+
+    showRandomTooltips(cityTooltips); // отображение случайной подсказки (строки 443, 483, 662, 953, 1293)
     renewSelectedPlayerEnemyHeatlh(selectedPlayerEnemy); // обновить хп поверженного врага
     hidePlayerWinFightBtns(); // скрыть кнопки победы игрока
     unlockCombatBtns(); // раздизейблить кнопки сражения
@@ -1236,12 +1327,9 @@ function showCityBtns() {
 
 // Показать сообщение при посещении города:
 function showCityVisitAlert() {
-    let charNameValue = adventureGame[charInfoPos]['nick_name'];
 
+    randomCharacterAlerts(cityAlerts); // реплики персонажа в зависимости от его местоположения (строки 701, 846, 1328)
     let cityAlert = document.querySelector('.alert-container__player-alert');
-    cityAlert.innerHTML = `
-        ${charNameValue}: The first thing i need to do is visit the tavern...
-    `;
 
     setTimeout( () => {
         cityAlert.style.visibility = 'visible';
@@ -1249,7 +1337,7 @@ function showCityVisitAlert() {
 
     setTimeout( () => {
         hideCityVisitAlert();
-    }, 5000) // через 5 секунд сообщение о посещении города скрывается (либо игрок может убрать его самостоятельно по клику)
+    }, 7000) // через 7 секунд сообщение о посещении города скрывается (либо игрок может убрать его самостоятельно по клику)
 }
 
 // Скрыть сообщение при посещении города:
@@ -1264,7 +1352,7 @@ function travelToTheCity(e) {
 
     if (target.id !== 'travel-to-the-city') {
         return;
-    }
+    }    
 
     let leaveTheCityBtn = document.querySelector('#leave-city');
     leaveTheCityBtn.disabled = true;
@@ -1273,11 +1361,11 @@ function travelToTheCity(e) {
         leaveTheCityBtn.disabled = false;
     }, 2000) // антиспам для кнопки (переключение между посетить город / покинуть город игроком)
     
+    showRandomTooltips(cityTooltips); // отображение случайной подсказки
     healthRegenInCityAnimation(); // восстановление здоровья персонажа, при посещении города
     hideTravelBtns();
     showCityBtns();
     showCityVisitAlert();
-    // функция отображения подсказки
 }
 document.addEventListener('click', travelToTheCity);
 
@@ -1292,7 +1380,7 @@ function leaveTheCity(e) {
     showTravelBtns();
     hideCityBtns();
     hideCityVisitAlert();
-    // функция отображения подсказки
+    showRandomTooltips(combatTooltips); // отображение случайной подсказки (строки 443, 483, 662, 953, 1293)
 }
 document.addEventListener('click', leaveTheCity);
 
@@ -1406,7 +1494,7 @@ function visitMagicStore(e) {
     if (target.id !== 'magic-store') {
         return;
     }
-
+    
     fillGoodsPrices(); // заполнить данные по ценам на товары
     checkAmountOfPlayerGold(); // проверка количества золота у игрока
     renderStoreWindow(); // отобразить окно магазина
@@ -1484,6 +1572,91 @@ function buyHealthPoints(e) {
 document.addEventListener('click', buyHealthPoints);
 
 
+// ------------------------------------------------------------------------------- //
+// ---------------------- ПОКУПКА СЕКРЕТНОГО ОРУЖИЯ ------------------------------ //
+
+// Отобразить сообщение о покупке игроком секретного оружия:
+function showPlayerBoughtWeaponAlert() {
+    let playerBoughtWeaponAlert = document.querySelector('.alert-container__player-alert');
+    playerBoughtWeaponAlert.innerHTML = `
+        Рукоять оружия больно впивается в руку владельца...
+    `;
+
+    playerBoughtWeaponAlert.style.visibility = 'visible';
+}
+
+// Анимация потери очков здоровья при покупке секретного оружия:
+function healthLossAnimationSecretWeap() {
+    let playerHealthElem = document.querySelector('.stats-values__elem.char-health')
+
+    playerHealthElem.style.color = 'rgb(120 7 7)';
+    playerHealthElem.style.fontWeight = 'bold';
+
+    setTimeout( () => {
+        playerHealthElem.style.color = 'black';
+        playerHealthElem.style.fontWeight = 'normal';
+    }, 3500)
+}
+
+// Анимация увеличения урона при покупке секретного оружия:
+function damageIncreaseAnimationSecretWeap() {
+    let playerDamageElem = document.querySelector('.stats-values__elem.char-damage')
+
+    playerDamageElem.style.color = 'black';
+    playerDamageElem.style.fontWeight = 'bold';
+
+    setTimeout( () => {
+        playerDamageElem.style.color = 'black';
+        playerDamageElem.style.fontWeight = 'normal';
+    }, 3500)
+}
+
+// При покупке секретного оружия: скрыть из магазина даггер:
+function hideDaggerInSecretShop() {
+    let daggerItemElement = document.querySelector('.city-store-container__item.dagger-container');
+    daggerItemElement.style.display = 'none';
+}
+
+// Отобразить в магазине даггер:
+function showDaggerInSecretShop() {
+    let daggerItemElement = document.querySelector('.city-store-container__item.dagger-container');
+    daggerItemElement.style.display = 'flex';
+}
+
+// ОБЩАЯ ФУНКЦИЯ (покупка игроком секретного оружия):
+function buySecretweapon(e) {
+    let target = e.target;
+    if ( (target.id !== 'secret-weap') ) {
+        return;
+    }
+
+    // Покупка доступна только когда у персонажа 40хп (не больше)
+    if ( adventureGame[charInfoPos].health > 40 ) {
+        document.querySelector('.city-store-container__item.secret-container').style.visibility = 'hidden';
+    }
+
+    adventureGame[charInfoPos].current_max_hp_value = 20;
+    healthLossAnimationSecretWeap(); // Анимация убавления хп игрока:
+    adventureGame[charInfoPos].health = 20;
+
+    damageIncreaseAnimationSecretWeap(); // Анимация увеличения урона игрока:
+    adventureGame[charInfoPos]['damage'] = 25;
+
+    // Отобразить сообщение о покупке игроком секретного оружия:
+    showPlayerBoughtWeaponAlert();
+
+    // скрыть из магазина даггер (т.к. секрет веапон лучше по урону)
+    hideDaggerInSecretShop();
+
+    // скрыть сам магический предмет (после покупки)
+    let magicItemElement = document.querySelector('.city-store-container__item.secret-container');
+    magicItemElement.style.display = 'none';
+
+    fillCharStatsValues(); // перезаполнить характеристики персонажа
+
+}
+document.addEventListener('click', buySecretweapon);
+
 
 // Уход из городского магазина:
 function leaveMagicStore(e) {
@@ -1495,15 +1668,78 @@ function leaveMagicStore(e) {
 
     hideStoreWindow();
 }
-
 document.addEventListener ('click', leaveMagicStore);
 
 
 
-// покупка секретного оужия (доступно только если у персонажа не более 40хп)
-// удорожание цен на остальное в 1.5 раза при покупке секретного
-// Напиши функцию отображения рандомной подсказки из двух массивов (мирные подсказки и подсказки во время боя);
+// Реплики созданного персонажа:
+const battleAlerts = [
+    "Нужно больше тренироваться!",
+    "Хм, вроде было легко...",
+    "Фух...",
+    "Надо проверить уровень здоровья...",
+]
 
+const missAlerts = [
+    "Промах?! Изворотливый гад!",
+    "Промах!",
+    "Я промахнулся???",
+    "Он увернулся от удара!",
+]
+
+const cityAlerts = [
+    "Первым делом надо посетить таверну...",
+    "Эх, стоптал сапоги...",
+    "Интересно, как там поживает Цири...",
+    "Говорят, что в магазине продается какое-то секретное оружие...",
+    "Говорят, что в магазине продается какое-то секретное оружие...",
+];
+
+function randomCharacterAlerts(inputAlertsArr) {
+    let alertNumber = Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно
+    
+    let alertElem = document.querySelector('.alert-container__player-alert');
+    alertElem.innerHTML = `
+        ${adventureGame[1].nick_name}: ${inputAlertsArr[alertNumber]}
+    `;
+
+    alertElem.style.visibility = 'visible';
+}
+
+
+// Отображение подсказок внизу интерфейса:
+const cityTooltips = [
+    "Поговаривают, что при определенных обстоятельствах в городе можно приобрести секретное магическое оружие...",
+    "В городском магазине можно купить дополнительные очки здоровья...",
+    "Не забывайте вовремя обновлять свое вооружение...",
+    "При посещении города очки здоровья персонажа восстанавливаются...",
+];
+
+const combatTooltips = [
+    "Враги бывают крайне изворотливы...Даже очень...",
+    "Держите друзей близко, а врагов еще ближе... Выбирайте с умом...",
+    "Вам всегда предоставляется возможность первым атаковать врага. Но достаточно ли этого?",
+    "До начала боя всегда есть возможность сбежать, но какже ваша гордость воина?",
+];
+
+function showRandomTooltips(inputTooltipsArr) {
+    let toolTipNumber = Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно
+    
+    let toolTipElem = document.querySelector('.gameplay-body__descrip');
+    toolTipElem.innerHTML = `
+        ${inputTooltipsArr[toolTipNumber]}
+    `;
+
+    //toolTipElem.style.visibility = 'visible';
+}
+
+// Делать обычное оружие чуть дороже при покупке секретного?
+// Перенеси элемент с алертами ниже элемента магазина в верстке (или сделать его абсолютно спозиционированным)
+// Сделай функцию концовки игры
+// Скрыть дагер / меч из магазина, после его покупки
+// Отображение алертов при возвращении в город после боя чуть глючит
+// Поправь верстку на разных размерах экрана (алерты и магазин)
+// Убирай тултип при посещени магазина, сделай больше марджин топ у интерфейса магазина
 
 
 
@@ -1522,6 +1758,8 @@ document.addEventListener ('click', leaveMagicStore);
     Как сохранять объект (например, для рестарта игры), не мутировать его. Создавать резервную копию и работать с ней, а оригинал не трогать?
 - Шестой:
     Когда лучше работать с объектами (методами объектов), а когда просто с DOM-деревом и указывать всю информацию в нем?
+- Седьмой:
+    ".enemy-stats-container" из-за приоритета селекторов, не работают стили, пришлось прописать их в верстке (в теге). Подумай, как сделать по-нормальному.
 */
 
 

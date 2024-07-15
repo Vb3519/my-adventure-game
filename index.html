@@ -69,7 +69,7 @@
 
             <div class="gameplay-header__enemy-stats enemy-stats-container">
                 <!-- Характеристики врага: -->
-                <div class="enemy-stats-container">
+                <div class="enemy-stats-container" style="position: absolute; top: 2.5rem;"> <!-- если это прописать в стилях - то не работает позиционирвоание -->
 
                     <div class="enemy-stats-container__enemy-name">
                         Enemy-name
@@ -85,13 +85,7 @@
         </div>
 
         <!-- Страница геймплея игры (БОДИ>): -->
-        <div class="gameplay-page__body gameplay-body">
-            <div class="gameplay-body__alert alert-container">               
-
-                <div id="game-alert" class="alert-container__player-alert">
-                    The first thing i need to do is visit the tavern...
-                </div>
-            </div>
+        <div class="gameplay-page__body gameplay-body">            
 
             <!-- Городской магазин: -->
             <div class="gameplay-body__city-store city-store-container">
@@ -181,6 +175,15 @@
                 </div>
 
             </div>
+
+            <!-- Реплики персонажа: -->
+            <div class="gameplay-body__alert alert-container">
+
+                <div id="game-alert" class="alert-container__player-alert">
+                    The first thing i need to do is visit the tavern...
+                </div>
+            </div>
+            
 
             <!-- Кнопки выбора дальнейших действий персонажа: -->
             <div class="gameplay-body__gameplay-btns gameplay-btns-container">                

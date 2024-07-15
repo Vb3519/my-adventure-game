@@ -124,6 +124,8 @@ body {
 }
 
 .enemy-stats-container {
+    /* position: absolute; ---------------- Почему не работают тут стили? Вес селекторов? Указал стили в теге элемента
+    top: 2.5rem; */
     margin-left: auto; /* "justify-content: space-between;" во flex-box не работает, когда один
     из выравниваемых элементов с "position: absolute" */
     min-width: 75px;
@@ -208,6 +210,7 @@ body {
 
 /* Городской магазин */
 .gameplay-body__city-store {
+    margin-top: 5rem;
     visibility: hidden;
     display: flex;
     flex-direction: column;
