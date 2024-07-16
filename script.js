@@ -906,7 +906,7 @@ function setupAllOptionsAfterBattle() {
         hideCombatBtns(); // скрыть кнопки для процесса сражения (атака, бегство)
         showPlayerWinFightBtns(); // отобразить кнопки вариантов действий игрока (при победе игрока)        
         hideEnemyNameAndStats(); // скрыть характеристики поверженного врага
-        showNewTooltip(); // отобразить новую подсказку
+        showRandomTooltips(combatTooltips); // отобразить новую подсказку
         addGoldtoPlayerIfWinFight(); // добавить метод получения золота к объекту персонажа игрока
         refillCharStatsValues(); // перезаполнить и отрисовать новые (если есть) характеристики игрока
     }
@@ -1798,8 +1798,8 @@ function endOfTheGamePlayerWins() {
     if ( isEnemyDead(selectedPlayerEnemy) && (dragonBtn.dataset.gameFinal === 'dragon-dead')) {
         hideEnemyNameAndStats();
         hideCombatBtns(); // скрыть кнопки для процесса сражения (атака, бегство)
-        showRestartBtn(); // Отобразить кнопку рестарта        
-        showNewTooltip(); // отобразить новую подсказку        
+        showRestartBtn(); // Отобразить кнопку рестарта
+        showRandomTooltips(combatTooltips); // отобразить новую подсказку        
         refillCharStatsValues(); // перезаполнить и отрисовать новые (если есть) характеристики игрока        
 
         let pageToolTip = document.querySelector('.gameplay-body__descrip');
