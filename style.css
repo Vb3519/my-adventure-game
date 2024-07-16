@@ -129,7 +129,7 @@ body {
     top: 2.5rem; */
     margin-left: auto; /* "justify-content: space-between;" во flex-box не работает, когда один
     из выравниваемых элементов с "position: absolute" */
-    min-width: 80px;
+    min-width: 100px;
     display: flex;       
     flex-direction: column;
     align-items: flex-start;

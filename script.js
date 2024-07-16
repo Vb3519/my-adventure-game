@@ -1380,8 +1380,8 @@ function leaveTheCity(e) {
         return;
     }
 
-    let cityStoreElem = document.querySelector('.gameplay-body__city-store.city-store-container');
-    cityStoreElem.style.marginTop = '0'; // выравнивание окна магазина (когда оно скрыто)
+    // let cityStoreElem = document.querySelector('.gameplay-body__city-store.city-store-container');
+    // cityStoreElem.style.marginTop = '0'; // выравнивание окна магазина (когда оно скрыто)
 
     shoWeGameTooltipsElemAndStatsBtn(); // отобразить элемент с подсказками и кнопку характеристик персонажа
     showTravelBtns();
