@@ -320,12 +320,6 @@ function addNewCharStatsValues() {
     }
 
     for (; i < arr.length;) {        
-        arr[i].innerText = `Level: ${charInfo['level']}`;
-        i++;
-        break;
-    }
-
-    for (; i < arr.length;) {        
         arr[i].innerText = `Gold: ${charInfo['gold']}`;
         i++;
         break;
@@ -405,12 +399,6 @@ function fillCharStatsValues() {
 
     for (; i < charStatsElemArr.length;) {        
         charStatsElemArr[i].innerText = `Damage: ${charInfo['damage']}`;
-        i++;
-        break;
-    }
-
-    for (; i < charStatsElemArr.length;) {        
-        charStatsElemArr[i].innerText = `Level: ${charInfo['level']}`;
         i++;
         break;
     }
@@ -658,8 +646,12 @@ function choosePlayerEnemyAndStartFight(e) {
     
     if (target.id === 'dragon_enemy') {
         setupAllOptionsBeforeBattle(dragon_steelwing);
+
+        let dragonBtn = document.querySelector('#dragon_enemy');
+        dragonBtn.setAttribute('data-game-final', 'dragon-dead');
     }
     showRandomTooltips(combatTooltips); // отображение случайной подсказки (строки 443, 483, 662)
+
 }
 document.addEventListener('click', choosePlayerEnemyAndStartFight);
 
@@ -701,8 +693,8 @@ function combatPlayerMissChance(inputPlayerEnemy, enemyHealthElem) {
 };
 
 function randomCharacterAlerts(inputAlertsArr) {
-    let alertNumber= Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно
-    
+    let alertNumber= Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно   
+
     let alertElem = document.querySelector('.alert-container__player-alert');
     alertElem.innerHTML = `
         ${adventureGame[1].nick_name}: ${inputAlertsArr[alertNumber]}
@@ -766,7 +758,7 @@ function playerAttack(inputPlayerEnemy) { // работает по клику в
 
     if (attacksCounter % 2 === 0) {
         combatPlayerMissChance(inputPlayerEnemy, enemyHealthElem); // функция боя с генерацией шанса промаха (25%)
-
+        endOfTheGamePlayerWins();
         
         // inputPlayerEnemy['fight_health_decrease']();
         // battleHealthDecreaseAnimation(enemyHealthElem);
@@ -808,10 +800,10 @@ function enemyAttack() {
         if ( isPlayerCharacterDead() ) {
             resetGameInterface();
             attackBtn.disabled = true;
-        }
+        }        
         
         attacksCounter++;
-        return charInfoObj;
+        return charInfoObj;        
     }
 }
 
@@ -848,6 +840,10 @@ function alertAfterBattlePlayerWins() {
     randomCharacterAlerts(battleAlerts); // реплики персонажа в зависимости от его местоположения (строки 701, 846,)
 
     let playerWinAlertElem = document.querySelector('.alert-container__player-alert');
+
+    if (playerWinAlertElem == null) {
+        return;
+    }
 
     if ( isEnemyDead(selectedPlayerEnemy) ) {
         playerWinAlertElem.style.visibility = 'visible';
@@ -900,7 +896,9 @@ function refillCharStatsValues() {
 // ОБЩАЯ ФУНКЦИЯ: ПОБЕДА ИГРОКА (обновить интерфейс, данные объектов и т.д.). Вызываются все функции, кроме отображения сообщения о победе:
 // Данная функция вызывается внутри функции "enemyAttack()", т.к. там идет проверка на ХП врага
 function setupAllOptionsAfterBattle() {
-    if ( !isEnemyDead(selectedPlayerEnemy) ) {
+    let dragonBtn = document.querySelector('#dragon_enemy');
+
+    if ( !isEnemyDead(selectedPlayerEnemy) || (dragonBtn.dataset.gameFinal === 'dragon-dead') ) {
         return;
     }
 
@@ -1000,7 +998,8 @@ document.addEventListener('click', manuallyHideAlertPlayerLose);
 
 // Скрыть сообщение о поражении игрока автоматически (при рестарте игры):
 function automaticallyHideAlertElem() {
-    let alertElem = document.querySelector('.alert-container__player-alert');
+    let alertElem = document.querySelector('.alert-container__player-alert');   
+
     alertElem.style.visibility = 'hidden';
 }
 
@@ -1176,6 +1175,9 @@ function gameRestart(e) {
     let gameplayPage = document.querySelector('.gameplay-page');
     gameplayPage.style.display = 'none';
 
+    let dragonBtn = document.querySelector('#dragon_enemy');
+    dragonBtn.removeAttribute('data-game-final');     
+
     // Функции для работы с кнопками:
     hideRestartBtn(); // скрыть кнопку рестарта
     showTravelBtns(); // отобразить кнопки для путешествий
@@ -1198,6 +1200,7 @@ function gameRestart(e) {
     // Городской магазин:
     showSecretWeapElem(); // отобразить секретное орежие в городе (при рестарте). По умолчанию доступно только при первом посещении города (до боя с врагом).
     showDaggerInSecretShop(); // отобразить даггер (при рестарте), если было куплено секретное оружие
+    showSwordinSecretShop(); // отобразить меч (при рестарте)
 }
 document.addEventListener('click', gameRestart);
 
@@ -1377,6 +1380,10 @@ function leaveTheCity(e) {
         return;
     }
 
+    let cityStoreElem = document.querySelector('.gameplay-body__city-store.city-store-container');
+    cityStoreElem.style.marginTop = '0'; // выравнивание окна магазина (когда оно скрыто)
+
+    shoWeGameTooltipsElemAndStatsBtn(); // отобразить элемент с подсказками и кнопку характеристик персонажа
     showTravelBtns();
     hideCityBtns();
     hideCityVisitAlert();
@@ -1401,10 +1408,12 @@ function addMethodBuyWeapon() {
         // selectedWeapon = target.id
         if (inputWeapon === 'dagger-weap') {
             charInfoObj.damage = 20;
+            hideDaggerInSecretShop();
         }
 
         if (inputWeapon === 'sword-weap') {
             charInfoObj.damage = 50;
+            hideSwordInSecretShop();
         }
     }
 }
@@ -1487,6 +1496,24 @@ function fillGoodsPrices() {
     }
 }
 
+// Скрыть элемент с игровыми подсказками (используется при посещении магазина):
+function hideGameTooltipsElemAndStatsBtn() {
+    let tooltipElem = document.querySelector('.gameplay-body__descrip');
+    tooltipElem.style.display = 'none';
+
+    let charStatsBtn = document.querySelector('.stats-container__btn');
+    charStatsBtn.style.display = 'none';
+}
+
+// Отобразить элемент с игровыми подсказками:
+function shoWeGameTooltipsElemAndStatsBtn() {
+    let tooltipElem = document.querySelector('.gameplay-body__descrip');
+    tooltipElem.style.display = 'block';
+
+    let charStatsBtn = document.querySelector('.stats-container__btn');
+    charStatsBtn.style.display = 'block';
+}
+
 // ОБЩАЯ ФУНКЦИЯ (посещение городского магазина):
 function visitMagicStore(e) {
     let target = e.target;
@@ -1495,10 +1522,14 @@ function visitMagicStore(e) {
         return;
     }
     
+    let cityStoreElem = document.querySelector('.gameplay-body__city-store.city-store-container');
+    cityStoreElem.style.marginTop = '5rem'; // выравнивание окна магазина (при его отображении)
+
     fillGoodsPrices(); // заполнить данные по ценам на товары
     checkAmountOfPlayerGold(); // проверка количества золота у игрока
     renderStoreWindow(); // отобразить окно магазина
-    hideVisitStoreBtn(); // скрыть окно магазина
+    hideVisitStoreBtn(); // скрыть кнопку посещения магазина
+    hideGameTooltipsElemAndStatsBtn(); // скрыть элемент с игровыми подсказками и кнопку характеристик персонажа
 
     // отобразить кнопки покупки напротив каждого оружия (два оружия, две кнопки); секретное оружие, которое можно купить за хп (сделать тултип - "подумай дважды")
     // покупка хп; 10хп - 10 золота
@@ -1623,6 +1654,18 @@ function showDaggerInSecretShop() {
     daggerItemElement.style.display = 'flex';
 }
 
+// Скрыть в магазине меч:
+function hideSwordInSecretShop() {
+    let swordItemElement = document.querySelector('.city-store-container__item.sword-container');
+    swordItemElement.style.display = 'none';
+}
+
+// Отобразить меч:
+function showSwordinSecretShop() {
+    let swordItemElement = document.querySelector('.city-store-container__item.sword-container');
+    swordItemElement.style.display = 'flex';
+}
+
 // ОБЩАЯ ФУНКЦИЯ (покупка игроком секретного оружия):
 function buySecretweapon(e) {
     let target = e.target;
@@ -1671,6 +1714,9 @@ function leaveMagicStore(e) {
 document.addEventListener ('click', leaveMagicStore);
 
 
+// ------------------------------------------------------------------------------- //
+// -------------- РЕПЛИКИ ПЕРСОНАЖА И ОТОБРАЖЕНИЕ ПОДСКАЗОК ---------------------- //
+// ------------------------------------------------------------------------------- //
 
 // Реплики созданного персонажа:
 const battleAlerts = [
@@ -1696,16 +1742,20 @@ const cityAlerts = [
 ];
 
 function randomCharacterAlerts(inputAlertsArr) {
-    let alertNumber = Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно
-    
+    let alertNumber = Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно    
+
     let alertElem = document.querySelector('.alert-container__player-alert');
+
+    if (alertElem == null) {
+        return;
+    }
+
     alertElem.innerHTML = `
         ${adventureGame[1].nick_name}: ${inputAlertsArr[alertNumber]}
     `;
 
     alertElem.style.visibility = 'visible';
 }
-
 
 // Отображение подсказок внизу интерфейса:
 const cityTooltips = [
@@ -1733,14 +1783,36 @@ function showRandomTooltips(inputTooltipsArr) {
     //toolTipElem.style.visibility = 'visible';
 }
 
-// Делать обычное оружие чуть дороже при покупке секретного?
-// Перенеси элемент с алертами ниже элемента магазина в верстке (или сделать его абсолютно спозиционированным)
-// Сделай функцию концовки игры
-// Скрыть дагер / меч из магазина, после его покупки
-// Отображение алертов при возвращении в город после боя чуть глючит
-// Поправь верстку на разных размерах экрана (алерты и магазин)
-// Убирай тултип при посещени магазина, сделай больше марджин топ у интерфейса магазина
 
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+// ---------------------------------------------------------------- КОНЦОВКА ИГРЫ (ПОБЕДА ИГРОКА) ------------------------------------------------------------ //
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------- //
+function endOfTheGamePlayerWins() {
+    
+    if ( !isEnemyDead(selectedPlayerEnemy) ) {
+        return;
+    }
+
+    let dragonBtn = document.querySelector('#dragon_enemy');
+
+    if ( isEnemyDead(selectedPlayerEnemy) && (dragonBtn.dataset.gameFinal === 'dragon-dead')) {
+        hideEnemyNameAndStats();
+        hideCombatBtns(); // скрыть кнопки для процесса сражения (атака, бегство)
+        showRestartBtn(); // Отобразить кнопку рестарта        
+        showNewTooltip(); // отобразить новую подсказку        
+        refillCharStatsValues(); // перезаполнить и отрисовать новые (если есть) характеристики игрока        
+
+        let pageToolTip = document.querySelector('.gameplay-body__descrip');
+        pageToolTip.innerHTML = 'Поздравляем! Вы прошли игру ^_^';        
+    }
+}
+
+
+
+// Читы ^^
+// adventureGame[1].gold = 1500;
+// checkAmountOfPlayerGold();
+// fillCharStatsValues();
 
 
 /* Вопросы:
