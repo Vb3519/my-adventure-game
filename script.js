@@ -837,7 +837,11 @@ function battleHealthDecreaseAnimation(inputPlayerOrEnemy) {
 // Сообщение о победе игрока (отображается 2 секунды):
 function alertAfterBattlePlayerWins() {
 
-    randomCharacterAlerts(battleAlerts); // реплики персонажа в зависимости от его местоположения (строки 701, 846,)
+    let dragonBtn = document.querySelector('#dragon_enemy');
+
+    if (!(dragonBtn.dataset.gameFinal === 'dragon-dead')) {
+        randomCharacterAlerts(battleAlerts);
+    } // реплики персонажа в зависимости от его местоположения (строки 701, 846,)
 
     let playerWinAlertElem = document.querySelector('.alert-container__player-alert');
 
@@ -1741,6 +1745,13 @@ const cityAlerts = [
     "Говорят, что в магазине продается какое-то секретное оружие...",
 ];
 
+const playerWinAlerts = [
+    "Н-ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ-АААААААААААААА!",
+    "Н-ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ-АААААААААААААА!",
+    "Н-ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ-АААААААААААААА!",
+    "Н-ЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫЫ-АААААААААААААА!",
+]
+
 function randomCharacterAlerts(inputAlertsArr) {
     let alertNumber = Math.floor(Math.random() * (3 - 0 + 1) + 0); // максимум и минимум включительно    
 
@@ -1796,6 +1807,7 @@ function endOfTheGamePlayerWins() {
     let dragonBtn = document.querySelector('#dragon_enemy');
 
     if ( isEnemyDead(selectedPlayerEnemy) && (dragonBtn.dataset.gameFinal === 'dragon-dead')) {
+        randomCharacterAlerts(playerWinAlerts);
         hideEnemyNameAndStats();
         hideCombatBtns(); // скрыть кнопки для процесса сражения (атака, бегство)
         showRestartBtn(); // Отобразить кнопку рестарта
