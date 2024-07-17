@@ -60,167 +60,11 @@ function findObjPos(inputMainGameArr, objName) {
     }
 }
 
-// как мне эту функцию запустить 4 раза и получить индекс каждого объекта сразу?
+// Как мне эту функцию запустить 4 раза и получить индекс каждого объекта сразу?
 const charInfoPos = findObjPos(adventureGame, charInfo); // индекс 1
 const enemyInfoPos = findObjPos(adventureGame, enemyInfo); // индекс 2
 const shopPos = findObjPos(adventureGame, shop); // индекс 3
 const weaponsDamagePos = findObjPos(adventureGame, weaponsDamage); // индекс 4
-
-// --------------------- РАБОТА С ОБЪЕКТОМ "charInfo" (adventureGame[1]) --------------------- //
-// Добавление имени персонажа в объект "charInfo":
-function setCharName() {
-    let charNameValue = prompt('Type your character name', '');
-
-    charInfo['nick_name'] = charNameValue;
-    charInfo.nickName_listed = true;
-
-    return charInfo;
-}
-
-// Добавление метода "health_increase" (покупка хп в магазине города):
-// Вариант №1:health_increase
-function addHealthPoints_Increase() {
-    let charInfoObj = adventureGame[charInfoPos]; // подобие функции - конструктора (НЕ используется "new" при вызове)
-
-    charInfoObj.health_increase = function() {
-        charInfoObj.health += 20;
-        charInfoObj.current_max_hp_value += 20;
-        return charInfoObj; // если убрать "return charInfoObj" - не будет работать цепочка вызовов метода объекта
-    }
-
-// // Вариант №2 и №3:
-// function BuyHP(inputObj) {
-//     inputObj.healthIncrease = function() {
-//         inputObj.health += 10;
-//         return inputObj;
-//     }
-// }
-
-// // Вариант №3:
-// function HealthIncrease() { /* если ее вызывать ч/з "new" с уже существующим объектом (пытаясь добавить ему метод),
-//     то у объекта будет появляться свойство - объект с этим методом (это не то, что нужно). Т.е. лучше этим пользоваться, когда объекта вообще нет*/
-//     this.healthIncrease = function() {
-//         this.health += 10;
-//         return this;
-//     }
-//     // т.е. такой функцией можно написать весь объект "charInfo" игры "adventureGame" (если его изначально нет)
-// }
-}
-
-// Добавление метода "gold_increase" (получение золота при убийстве монстров):
-function addGainGold() {
-    let charInfoObj = adventureGame[charInfoPos];
-
-    charInfoObj['gold_increase'] = function(selectedPlayerEnemy) {
-        if (!selectedPlayerEnemy) {
-            return;
-        }
-        
-        if (selectedPlayerEnemy === wild_boar) {
-            charInfoObj['gold'] += 10;
-            return charInfoObj;
-        }
-
-        if (selectedPlayerEnemy === blackBrowedBear) {
-            charInfoObj['gold'] += 20;
-            return charInfoObj;
-        }
-    }
-}
-
-// Добавление метода "gain_exp_and_levels" (получение опыта при убийстве монстров; и повышение уровня):
-function addGainExpAndLevels() {
- let charInfoObj = adventureGame[charInfoPos]
-
- charInfoObj['gain_exp_and_levels'] = function(){
-    if (charInfoObj.exp < 100) {
-        charInfoObj.exp += 10;        
-        return charInfoObj;
-    }
-
-    charInfoObj.exp = 0;
-    charInfoObj['level'] += 1;
-    charInfoObj.health += 10;
-    return charInfoObj;
- }
-}
-
-// ------------------- Одна общая функция для указания имени персонажа и добавления всех методов к объекту "charInfo":
-function setAllMethodsForcharInfo() {
-    addHealthPoints_Increase();
-    addGainGold();
-    addGainExpAndLevels();
-    setCharName();
-    return adventureGame[charInfoPos];
-}
-
-
-// Эти две функции, возможно НЕ нужны (написал одну общую):
-// Функция №1 (рабочий вариант) сражения игрока с разными врагами (3 типа):
-function setPlayerEnemy(playerEnemy) { // сюда ч/з аргумент вызова функции передается враг игрока
-    let charInfoObj = adventureGame[charInfoPos]; 
-    
-    if (playerEnemy == undefined || playerEnemy == null) {
-        return `No enemies were found nearby`;
-    };
-
-    charInfoObj.health -= playerEnemy['damage']
-    if (charInfoObj.health <= 0) {
-        charInfoObj.health = 0; // чтобы значение хп не уменьшалось ниже "0";
-        return 'YOU DIED!';
-    }
-
-    return charInfoObj;    
-};
-// Функция №2 (много кода, ч/з "switch") сражения игрока с разными врагами (3 типа):
-function addHealthLossForPlayer(playerEnemy) {
-    let charInfoObj = adventureGame[charInfoPos];    
-
-    if (playerEnemy) { // если есть враг, то мы перебираем врагов (3 варианта)
-        switch(playerEnemy) {
-            case wild_boar:
-                charInfoObj.health -= wild_boar['damage']
-                if (charInfoObj.health <= 0) {
-                    return 'YOU DIED!'; // Привет Dark Souls ^_^
-                }
-
-                return charInfoObj;
-                //break;
-    
-            case blackBrowedBear:
-                charInfoObj.health -= blackBrowedBear['damage']
-                if (charInfoObj.health <= 0) {
-                    return 'YOU DIED!';
-                }
-
-                return charInfoObj;
-            
-            case dragon_steelwing:
-                charInfoObj.health -= dragon_steelwing['damage']
-                if (charInfoObj.health <= 0) {
-                    return 'YOU DIED!';
-                }
-
-                return charInfoObj;
-        }
-    }
-
-    return `No enemies were found nearby`;
-}
-
-
-
-// --------------------- РАБОТА С ОБЪЕКТОМ "enemyInfo" (adventureGame[2]) --------------------- //
-
-// Функция поиска объекта "wild_boar" в массиве игры (по названию объекта):
-function findBoarEnemyObj() {
-    let generalEnemyInfoObj = adventureGame[enemyInfoPos]; // объект "enemyInfo" с 3-мя вложенными объектами (каждый враг - отдельный объект со своими свойствами);
-    let enemyListArr = Object.keys(generalEnemyInfoObj); // массив - перечень имен всех врагов;
-    let boarEnemyObjPos = enemyListArr.indexOf('wild_boar', 0); // По имени врага, нахожу номер его индекса в массиве: "0"
-
-    let enemyBoarObj = Object.values(generalEnemyInfoObj)[boarEnemyObjPos]; 
-    return enemyBoarObj;
-}
 
 // Объявление переменной "wild_boar" с помощью деструктуризации объекта "enemyInfo" (когда объектов мало):
 let {wild_boar} = adventureGame[enemyInfoPos]; // результат: объект "wild_boar" и его свойства ключ: значение
@@ -228,61 +72,7 @@ let {wild_boar} = adventureGame[enemyInfoPos]; // результат: объек
 let {blackBrowedBear} = adventureGame[enemyInfoPos];
 let {dragon_steelwing} = adventureGame[enemyInfoPos];
 
-
-// Добавление метода fight_health_decrease для объекта "wild_boar" (эта функция, возможно, НЕ нужна):
-function addHealthLossForEnemyBoar() {
-    let playerDamageValue = adventureGame[charInfoPos].damage;
-
-    wild_boar['fight_health_decrease'] = function() {
-        if (wild_boar.health <= 0) {            
-            return;
-        }
-        
-        wild_boar.health -= playerDamageValue;
-        return wild_boar;
-    }
-}
-
-
-
-// --------------------- ЛОГИКА ПРОЦЕССА БОЯ ИГРОКА С ПРОТИВНИКОМ: --------------------- //
 let playerEnemiesList = [wild_boar, blackBrowedBear, dragon_steelwing] // ч/з "indexOf()" найти позицию каждого объекта в "enemyInfo", далее перебрать сами объекты по номеру индекса;
-function addGeneralHealthLossForEnemy(inputEnemyList) { // сюда передать, как аргумент, массив объектов из объекта "enemyInfo"
-    let playerDamageValue = adventureGame[charInfoPos].damage;
-
-    inputEnemyList.forEach( enemyName => {
-        enemyName['fight_health_decrease'] = function() {
-            if (enemyName.health <= 0) {
-                return;
-            }
-            
-            enemyName.health -= playerDamageValue;
-            return enemyName;
-        }
-    })
-}
-
-// Добавление метода уменьшения ХП игрока в зависимости от типа врага (надо убирать этот метод перед каждым новым боем);
-function addHealthLossForPlayer(inputPlayerEnemy) {
-    let charInfoObj = adventureGame[charInfoPos];
-    
-    charInfoObj.player_fight_health_decrease = function() {
-        if (charInfoObj.health <= 0) {
-            return `YOU DIED!`;
-        }
-
-        if (charInfoObj.health > 0) {
-            charInfoObj.health -= inputPlayerEnemy['damage'];        
-            return charInfoObj;
-        }
-    }
-}
-
-
-
-
-
-
 
 
 
@@ -337,6 +127,61 @@ function renderCreatedCharInfoElem() {
     let charStats = document.querySelector('.game-start-page__char-stats');
     charStats.style.display = 'flex';
 }
+
+// ------------------------------------------------------------------ //
+// ------------- ДОБАВЛЕНИЕ МЕТОДОВ К ОБЪЕКТУ ПЕРСОНАЖА ------------- //
+
+// Добавление метода "health_increase" (покупка хп в магазине города), несколько вариантов:
+// Вариант №1: health_increase
+function addHealthPoints_Increase() {
+    let charInfoObj = adventureGame[charInfoPos]; // подобие функции - конструктора (НЕ используется "new" при вызове)
+
+    charInfoObj.health_increase = function() {
+        charInfoObj.health += 20;
+        charInfoObj.current_max_hp_value += 20;
+        return charInfoObj; // если убрать "return charInfoObj" - не будет работать цепочка вызовов метода объекта
+    }
+
+// // Вариант №2 и №3:
+// function BuyHP(inputObj) {
+//     inputObj.healthIncrease = function() {
+//         inputObj.health += 10;
+//         return inputObj;
+//     }
+// }
+
+// // Вариант №3:
+// function HealthIncrease() { /* если ее вызывать ч/з "new" с уже существующим объектом (пытаясь добавить ему метод),
+//     то у объекта будет появляться свойство - объект с этим методом (это не то, что нужно). Т.е. лучше этим пользоваться, когда объекта вообще нет*/
+//     this.healthIncrease = function() {
+//         this.health += 10;
+//         return this;
+//     }
+//     // т.е. такой функцией можно написать весь объект "charInfo" игры "adventureGame" (если его изначально нет)
+// }
+}
+
+// Добавление метода "gold_increase" (получение золота при убийстве монстров):
+function addGainGold() {
+    let charInfoObj = adventureGame[charInfoPos];
+
+    charInfoObj['gold_increase'] = function(selectedPlayerEnemy) {
+        if (!selectedPlayerEnemy) {
+            return;
+        }
+        
+        if (selectedPlayerEnemy === wild_boar) {
+            charInfoObj['gold'] += 10;
+            return charInfoObj;
+        }
+
+        if (selectedPlayerEnemy === blackBrowedBear) {
+            charInfoObj['gold'] += 20;
+            return charInfoObj;
+        }
+    }
+}
+
 
 // ОБЩАЯ ФУНКЦИЯ: (создать персонажа: запускаются все вышенаписанные функции)
 function createNewCharacter(e) {
@@ -1423,7 +1268,7 @@ function addMethodBuyWeapon() {
 }
 
 // Функция покупки оружия, включает в себя метод
-let selectedWeapon = ''; // --------------------------------------------------- почисти это значение для рестарта
+let selectedWeapon = '';
 function selectWeaponToBuy(e) {
     let target = e.target;
 
